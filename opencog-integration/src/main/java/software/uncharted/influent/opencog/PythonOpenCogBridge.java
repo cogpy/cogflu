@@ -128,7 +128,7 @@ public class PythonOpenCogBridge {
         
         // Convert parameters to JSON
         String parametersJson = objectMapper.writeValueAsString(parameters);
-        cmdLine.addArgument(parametersJson);
+        cmdLine.addArgument(parametersJson, false); // Don't handle quoting automatically
         
         // Set up executor
         DefaultExecutor executor = new DefaultExecutor();

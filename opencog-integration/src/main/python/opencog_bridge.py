@@ -27,10 +27,10 @@ def initialize_opencog():
     try:
         # Try to import OpenCog modules
         from opencog.atomspace import AtomSpace, types
-        from opencog.type_constructors import *
+        import opencog.type_constructors as type_constructors
         from opencog.utilities import initialize_opencog
         from opencog.bindlink import execute_atom
-        from opencog.pln import *
+        # from opencog.pln import *  # Comment out for now
         
         # Initialize OpenCog
         atomspace = AtomSpace()
@@ -81,9 +81,9 @@ def create_concept_node(concept: str) -> str:
         return f"mock_concept_{concept}"
     
     try:
-        from opencog.type_constructors import ConceptNode
+        import opencog.type_constructors as tc
         
-        node = ConceptNode(concept)
+        node = tc.ConceptNode(concept)
         atomspace.add_atom(node)
         
         logger.debug(f"Created concept node: {concept}")
@@ -102,9 +102,9 @@ def create_predicate_node(predicate: str) -> str:
         return f"mock_predicate_{predicate}"
     
     try:
-        from opencog.type_constructors import PredicateNode
+        import opencog.type_constructors as tc
         
-        node = PredicateNode(predicate)
+        node = tc.PredicateNode(predicate)
         atomspace.add_atom(node)
         
         logger.debug(f"Created predicate node: {predicate}")
@@ -123,20 +123,20 @@ def add_transaction_entity(entity_id: str, properties: Dict[str, Any]) -> str:
         return f"mock_entity_{entity_id}"
     
     try:
-        from opencog.type_constructors import ConceptNode, EvaluationLink, PredicateNode, ListLink
+        import opencog.type_constructors as tc
         
         # Create entity node
-        entity_node = ConceptNode(f"entity_{entity_id}")
+        entity_node = tc.ConceptNode(f"entity_{entity_id}")
         atomspace.add_atom(entity_node)
         
         # Add properties as evaluation links
         for prop_name, prop_value in properties.items():
-            pred_node = PredicateNode(f"has_{prop_name}")
-            value_node = ConceptNode(str(prop_value))
+            pred_node = tc.PredicateNode(f"has_{prop_name}")
+            value_node = tc.ConceptNode(str(prop_value))
             
-            eval_link = EvaluationLink(
+            eval_link = tc.EvaluationLink(
                 pred_node,
-                ListLink(entity_node, value_node)
+                tc.ListLink(entity_node, value_node)
             )
             atomspace.add_atom(eval_link)
         
@@ -156,19 +156,18 @@ def create_relationship(predicate: str, from_entity: str, to_entity: str, streng
         return f"mock_relationship_{predicate}_{from_entity}_{to_entity}"
     
     try:
-        from opencog.type_constructors import (
-            ConceptNode, PredicateNode, EvaluationLink, ListLink, NumberNode
-        )
+        import opencog.type_constructors as tc
+        from opencog.atomspace import TruthValue
         
         # Create entity nodes
-        from_node = ConceptNode(from_entity)
-        to_node = ConceptNode(to_entity)
-        pred_node = PredicateNode(predicate)
+        from_node = tc.ConceptNode(from_entity)
+        to_node = tc.ConceptNode(to_entity)
+        pred_node = tc.PredicateNode(predicate)
         
         # Create evaluation link with strength
-        eval_link = EvaluationLink(
+        eval_link = tc.EvaluationLink(
             pred_node,
-            ListLink(from_node, to_node)
+            tc.ListLink(from_node, to_node)
         )
         
         # Set truth value (strength and confidence)
@@ -199,7 +198,8 @@ def execute_pattern_matching(pattern: str) -> List[Dict[str, Any]]:
     
     try:
         from opencog.bindlink import execute_atom
-        from opencog.type_constructors import BindLink, VariableList, VariableNode
+        from opencog.atomspace import types
+        import opencog.type_constructors as tc
         
         # This is a simplified pattern matching - in practice, you would
         # create more sophisticated pattern matching based on the specific pattern
@@ -285,6 +285,7 @@ def detect_anomalies(threshold: float) -> List[Dict[str, Any]]:
         ]
     
     try:
+        from opencog.atomspace import types
         anomalies = []
         
         # Get all atoms and analyze attention values
@@ -324,10 +325,10 @@ def get_cognitive_insights(entity_id: str) -> Dict[str, Any]:
         }
     
     try:
-        from opencog.type_constructors import ConceptNode
+        import opencog.type_constructors as tc
         
         # Find the entity node
-        entity_node = ConceptNode(f"entity_{entity_id}")
+        entity_node = tc.ConceptNode(f"entity_{entity_id}")
         
         insights = {
             "entity_id": entity_id,
