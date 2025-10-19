@@ -1,0 +1,40 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <name>Ensemble Clustering Library</name>
+  <description>Ensemble Clustering Library</description>
+  <artifactId>ensemble-clustering</artifactId>
+  <packaging>jar</packaging>
+  
+  <parent>
+	<artifactId>ml</artifactId>
+	<groupId>com.oculusinfo</groupId>
+	<version>0.1.0-SNAPSHOT</version>
+  </parent>
+  
+  <build>
+  	<plugins>
+  		<!-- Generate JavaDocs -->
+		<plugin>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-javadoc-plugin</artifactId>
+			<version>2.9</version>
+			<configuration>
+				<doctitle>Ensemble Clustering Library API</doctitle>
+				<windowtitle>Ensemble Clustering Library</windowtitle>
+				<stylesheetfile>${basedir}/docstyle.css</stylesheetfile>
+			</configuration>
+			<executions>
+				<execution>
+					<id>package-javadoc</id>
+					<goals>
+						<goal>jar</goal>
+					</goals>
+				</execution>
+			</executions>
+		</plugin>
+	</plugins>
+  </build> 
+ </project>
+ 
+ 

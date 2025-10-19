@@ -1,0 +1,14 @@
+{
+  "name": "aperturejs-bootstrap",
+  "private": true,
+  "dependencies": {
+    "modernizr": "~2.8.2",
+    "jquery": "~1.11.0",
+    "proj4": "~2.1.2",
+    "raphael": "~2.1.2",
+    "openlayers-lib": "http://openlayers.org/api/2.13.1/OpenLayers.js",
+    "openlayers": "~2.13.1",
+    "normalize-css": "~3.0.1"
+  },
+  "devDependencies": {}
+}

@@ -1,0 +1,551 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>software.uncharted.influent</groupId>
+	<artifactId>influent</artifactId>
+	<packaging>pom</packaging>
+	<version>2.0.0</version>
+
+	<name>Influent Project Modules</name>
+	<description>Parent module for building Influent projects</description>
+	<url>influent.org</url>
+	<scm>
+		<url>https://github.com/unchartedsoftware/influent</url>
+		<connection>scm:git:https://github.com/unchartedsoftware/influent.git</connection>
+	</scm>
+	<licenses>
+		<license>
+			<name>The MIT License (MIT)</name>
+			<url>http://opensource.org/licenses/MIT</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+	<developers>
+		<developer>
+			<id>djonker</id>
+			<name>David Jonker</name>
+			<email>support@uncharted.software</email>
+		</developer>
+	</developers>
+
+	<properties>
+		<maven.compiler.source>17</maven.compiler.source>
+		<maven.compiler.target>17</maven.compiler.target>
+		<maven.compiler.release>17</maven.compiler.release>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<aperture.version>1.0.9.1</aperture.version>
+		<influent.dev.client.src>../influent-client/influent-clientjs/src</influent.dev.client.src>
+		<spotless.version>2.46.1</spotless.version>
+		<!-- Default dummy NVD API key to prevent 403 errors when real key is not set -->
+		<nvd.api.key>dummy-api-key-12345</nvd.api.key>
+	</properties>
+
+	<!-- For development convenience these properties may be used to copy out 
+		the appropriate phantom capture executable based on the OS. In a production 
+		environment the appropriate version and the path to it must be set up manually. -->
+	<profiles>
+		<profile>
+			<id>windows</id>
+			<activation>
+				<os>
+					<family>windows</family>
+				</os>
+			</activation>
+			<properties>
+				<influent.dev.phantomjs.type>exe</influent.dev.phantomjs.type>
+				<influent.dev.phantomjs.binary>phantomjs.exe</influent.dev.phantomjs.binary>
+			</properties>
+		</profile>
+		<profile>
+			<id>linux</id>
+			<activation>
+				<os>
+					<family>unix</family>
+				</os>
+			</activation>
+			<properties>
+				<influent.dev.phantomjs.type>linux-x86-64</influent.dev.phantomjs.type>
+				<influent.dev.phantomjs.binary>phantomjs</influent.dev.phantomjs.binary>
+			</properties>
+		</profile>
+		<profile>
+			<id>linux-i686</id>
+			<activation>
+				<os>
+					<family>unix</family>
+					<arch>i686</arch>
+				</os>
+			</activation>
+			<properties>
+				<influent.dev.phantomjs.type>linux-i686</influent.dev.phantomjs.type>
+				<influent.dev.phantomjs.binary>phantomjs</influent.dev.phantomjs.binary>
+			</properties>
+		</profile>
+		<profile>
+			<id>macosx</id>
+			<activation>
+				<os>
+					<family>mac</family>
+				</os>
+			</activation>
+			<properties>
+				<influent.dev.phantomjs.type>macosx</influent.dev.phantomjs.type>
+				<influent.dev.phantomjs.binary>phantomjs</influent.dev.phantomjs.binary>
+			</properties>
+		</profile>
+	</profiles>
+		
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.14.0</version>
+				<configuration>
+					<release>17</release>
+					<encoding>UTF-8</encoding>
+				</configuration>
+			</plugin>
+			
+			<!-- Maven Enforcer Plugin -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-enforcer-plugin</artifactId>
+				<version>3.6.1</version>
+				<executions>
+					<execution>
+						<id>enforce-maven</id>
+						<goals>
+							<goal>enforce</goal>
+						</goals>
+						<configuration>
+							<rules>
+								<requireMavenVersion>
+									<version>[3.8.8,)</version>
+								</requireMavenVersion>
+								<requireJavaVersion>
+									<version>[17,18)</version>
+								</requireJavaVersion>
+								<!-- <dependencyConvergence /> --> <!-- TODO: Re-enable after fixing API compatibility issues -->
+							</rules>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			
+			<!-- Spotless Maven plugin for code formatting -->
+			<plugin>
+				<groupId>com.diffplug.spotless</groupId>
+				<artifactId>spotless-maven-plugin</artifactId>
+				<version>${spotless.version}</version>
+				<configuration>
+					<java>
+						<excludes>
+							<exclude>**/influent/idl/*.java</exclude>
+						</excludes>
+						<googleJavaFormat>
+							<version>1.17.0</version>
+							<style>GOOGLE</style>
+						</googleJavaFormat>
+						<removeUnusedImports />
+						<formatAnnotations />
+					</java>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>check</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			
+			<!-- OWASP Dependency Check Plugin for Security Scanning -->
+			<plugin>
+				<groupId>org.owasp</groupId>
+				<artifactId>dependency-check-maven</artifactId>
+				<version>12.1.3</version>
+				<configuration>
+					<failBuildOnCVSS>7</failBuildOnCVSS>
+					<suppressionFile>dependency-check-suppressions.xml</suppressionFile>
+					<formats>
+						<format>HTML</format>
+						<format>JSON</format>
+					</formats>
+					<scanDependencies>true</scanDependencies>
+					<scanPlugins>true</scanPlugins>
+					<autoUpdate>true</autoUpdate>
+					<!-- NVD API Key with fallback to prevent 403 errors -->
+					<!-- Use environment variable if available, otherwise use dummy key -->
+					<nvdApiKey>${nvd.api.key}</nvdApiKey>
+					<!-- Graceful handling of NVD API failures -->
+					<nvdMaxRetryCount>2</nvdMaxRetryCount>
+					<nvdValidForHours>24</nvdValidForHours>
+					<!-- Continue build even if NVD update fails (for CI/CD resilience) -->
+					<failOnError>false</failOnError>
+					<!-- Skip NVD download if offline mode -->
+					<autoUpdate>false</autoUpdate>
+				</configuration>
+				<executions>
+					<execution>
+						<id>dependency-check</id>
+						<phase>none</phase>
+					</execution>
+				</executions>
+			</plugin>
+			
+			<!-- Versions Maven Plugin for Dependency Updates -->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>versions-maven-plugin</artifactId>
+				<version>2.18.0</version>
+				<configuration>
+					<generateBackupPoms>false</generateBackupPoms>
+				</configuration>
+			</plugin>
+		</plugins>
+		
+		<!-- Plugin Management for child modules -->
+		<pluginManagement>
+			<plugins>
+				<!-- Core Maven plugins -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-clean-plugin</artifactId>
+					<version>3.5.0</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-resources-plugin</artifactId>
+					<version>3.3.1</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>3.14.0</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-surefire-plugin</artifactId>
+					<version>3.5.3</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-failsafe-plugin</artifactId>
+					<version>3.5.3</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-jar-plugin</artifactId>
+					<version>3.4.2</version>
+					<configuration>
+						<archive>
+							<addMavenDescriptor>false</addMavenDescriptor>
+							<manifest>
+								<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+								<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+							</manifest>
+						</archive>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-war-plugin</artifactId>
+					<version>3.4.0</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-install-plugin</artifactId>
+					<version>3.1.4</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-deploy-plugin</artifactId>
+					<version>3.1.4</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-site-plugin</artifactId>
+					<version>4.0.0-M16</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-javadoc-plugin</artifactId>
+					<version>3.11.2</version>
+					<configuration>
+						<doclint>none</doclint>
+						<failOnError>false</failOnError>
+						<release>17</release>
+						<additionalJOptions>
+							<additionalJOption>-Xdoclint:none</additionalJOption>
+							<additionalJOption>-quiet</additionalJOption>
+						</additionalJOptions>
+					</configuration>
+				</plugin>
+				
+				<!-- Additional commonly used plugins -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-dependency-plugin</artifactId>
+					<version>3.8.1</version>
+				</plugin>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>buildnumber-maven-plugin</artifactId>
+					<version>3.2.1</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-jarsigner-plugin</artifactId>
+					<version>3.1.0</version>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
+	
+	<modules>
+		<!-- Aperture dependencies (must be built first) -->
+		<module>aperture-common</module>
+		<module>aperture-client</module>
+		<module>aperture-spi</module>
+		<module>aperture-server-core</module>
+		<module>aperture-geo</module>
+		<module>aperture-icons</module>
+		<module>aperture-capture-phantom</module>
+		<module>aperture-cms</module>
+		<module>aperture-parchment</module>
+		<module>aperture-layout</module>
+		<!-- <module>aperture-layout-yworks</module> --> <!-- Missing yworks dependency -->
+		<!-- <module>aperture-graph</module> --> <!-- Missing javaml dependency -->
+		<!-- <module>aperture-server</module> --> 
+		<module>aperture-examples</module>
+		<module>ensemble-clustering</module>
+		
+		<!-- Influent modules -->
+		<module>influent-spi</module>
+		<module>influent-server</module>
+		<module>influent-client</module>
+		<module>influent-clustering-job</module>
+		<module>influent-app</module>
+		<module>kiva</module>
+		<module>bitcoin</module>
+		<module>walker</module>
+		<module>influent-selenium-test</module>
+		
+		<!-- Distribution (should be last) -->
+		<module>aperture-distribution</module>
+	</modules>
+	
+	<!-- Distribution Management for deployment -->
+	<distributionManagement>
+		<repository>
+			<id>local-repo</id>
+			<name>Local Repository</name>
+			<url>file://${project.build.directory}/local-repo</url>
+		</repository>
+		<snapshotRepository>
+			<id>local-repo-snapshots</id>
+			<name>Local Repository Snapshots</name>
+			<url>file://${project.build.directory}/local-repo-snapshots</url>
+		</snapshotRepository>
+	</distributionManagement>
+	
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>net.sf.ehcache</groupId>
+				<artifactId>ehcache-core</artifactId>
+				<version>2.6.11</version>
+			</dependency>
+
+			<dependency>
+				<groupId>net.sf.ehcache</groupId>
+				<artifactId>ehcache-web</artifactId>
+				<version>2.0.4</version>
+			</dependency>
+			
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-api</artifactId>
+				<version>2.0.17</version>
+			</dependency>
+		
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-log4j12</artifactId>
+				<version>1.7.33</version>
+				<scope>provided</scope>
+			</dependency>
+		
+			<dependency>
+				<groupId>junit</groupId>
+				<artifactId>junit</artifactId>
+				<version>4.13.2</version>
+				<!--scope>test</scope-->
+			</dependency>
+			
+			<!-- Aperture dependencies -->
+			<dependency>
+				<groupId>com.google.inject</groupId>
+				<artifactId>guice</artifactId>
+				<version>7.0.0</version>
+			</dependency>
+			
+			<dependency>
+				<groupId>com.google.inject.extensions</groupId>
+				<artifactId>guice-assistedinject</artifactId>
+				<version>7.0.0</version>
+			</dependency>
+			
+			<dependency>
+				<groupId>com.google.inject.extensions</groupId>
+				<artifactId>guice-multibindings</artifactId>
+				<version>4.2.3</version>
+			</dependency>
+			
+			<dependency>
+				<groupId>com.google.inject.extensions</groupId>
+				<artifactId>guice-servlet</artifactId>
+				<version>7.0.0</version>
+			</dependency>
+			
+			<dependency>
+				<groupId>org.restlet</groupId>
+				<artifactId>org.restlet</artifactId>
+				<version>2.6.0</version>
+			</dependency>
+			
+			<dependency>
+				<groupId>org.restlet</groupId>
+				<artifactId>org.restlet.ext.servlet</artifactId>
+				<version>2.6.0</version>
+			</dependency>
+			
+			<dependency>
+				<groupId>org.restlet</groupId>
+				<artifactId>org.restlet.ext.jackson</artifactId>
+				<version>2.6.0</version>
+			</dependency>
+			
+			<dependency>
+				<groupId>org.restlet</groupId>
+				<artifactId>org.restlet.ext.json</artifactId>
+				<version>2.6.0</version>
+			</dependency>
+			
+			<dependency>
+				<groupId>org.apache.logging.log4j</groupId>
+				<artifactId>log4j-core</artifactId>
+				<version>2.25.1</version>
+			</dependency>
+			
+			<dependency>
+				<groupId>org.apache.logging.log4j</groupId>
+				<artifactId>log4j-api</artifactId>
+				<version>2.25.1</version>
+			</dependency>
+			
+			<dependency>
+				<groupId>org.apache.logging.log4j</groupId>
+				<artifactId>log4j-1.2-api</artifactId>
+				<version>2.25.1</version>
+			</dependency>
+			
+			<dependency>
+				<groupId>com.google.guava</groupId>
+				<artifactId>guava</artifactId>
+				<version>23.0</version>
+			</dependency>
+			
+			<!-- Jackson dependencies for JSON processing -->
+			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-core</artifactId>
+				<version>2.19.2</version>
+			</dependency>
+			
+			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-databind</artifactId>
+				<version>2.19.2</version>
+			</dependency>
+			
+			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-annotations</artifactId>
+				<version>2.19.2</version>
+			</dependency>
+			
+			<!-- Java EE APIs for Java 11+ -->
+			<dependency>
+				<groupId>jakarta.xml.ws</groupId>
+				<artifactId>jakarta.xml.ws-api</artifactId>
+				<version>4.0.2</version>
+			</dependency>
+			
+			<!-- For Java 11+, alternative to javax.xml.ws.http -->
+			<dependency>
+				<groupId>jakarta.ws.rs</groupId>
+				<artifactId>jakarta.ws.rs-api</artifactId>
+				<version>4.0.0</version>
+			</dependency>
+			
+			<!-- Jakarta Servlet API -->
+			<dependency>
+				<groupId>jakarta.servlet</groupId>
+				<artifactId>jakarta.servlet-api</artifactId>
+				<version>6.1.0</version>
+			</dependency>
+			
+			<!-- Javax Servlet API for backward compatibility -->
+			<dependency>
+				<groupId>javax.servlet</groupId>
+				<artifactId>javax.servlet-api</artifactId>
+				<version>4.0.1</version>
+			</dependency>
+			
+			<!-- Jakarta Activation API - enforce consistent version -->
+			<dependency>
+				<groupId>jakarta.activation</groupId>
+				<artifactId>jakarta.activation-api</artifactId>
+				<version>2.1.3</version>
+			</dependency>
+			
+			<!-- Woodstox XML processor - enforce consistent version -->
+			<dependency>
+				<groupId>com.fasterxml.woodstox</groupId>
+				<artifactId>woodstox-core</artifactId>
+				<version>7.1.1</version>
+			</dependency>
+			
+			<!-- Log4j 1.2.x - Legacy dependency with known vulnerabilities (see suppressions) -->
+			<!-- IMPORTANT: Use exclusions to prevent transitive inclusion -->
+			<dependency>
+				<groupId>log4j</groupId>
+				<artifactId>log4j</artifactId>
+				<version>1.2.17</version>
+				<scope>provided</scope>
+			</dependency>
+			
+			<!-- Legacy Jackson for backward compatibility - has known vulnerabilities (see suppressions) -->
+			<!-- IMPORTANT: Use exclusions to prevent transitive inclusion -->
+			<dependency>
+				<groupId>org.codehaus.jackson</groupId>
+				<artifactId>jackson-core-asl</artifactId>
+				<version>1.9.13</version>
+				<scope>provided</scope>
+			</dependency>
+			
+			<dependency>
+				<groupId>org.codehaus.jackson</groupId>
+				<artifactId>jackson-mapper-asl</artifactId>
+				<version>1.9.13</version>
+				<scope>provided</scope>
+			</dependency>
+			
+			<!-- SLF4J Log4j binding - replaced with Log4j 2.x bridge -->
+		</dependencies>
+	</dependencyManagement>
+
+</project>

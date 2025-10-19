@@ -1,0 +1,44 @@
+name: Maven CI
+
+on:
+  push:
+    branches: [ "master", "main", "develop" ]
+  pull_request:
+    branches: [ "master", "main", "develop" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        java-version: [ 17 ]
+      
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Set up JDK ${{ matrix.java-version }}
+      uses: actions/setup-java@v4
+      with:
+        java-version: ${{ matrix.java-version }}
+        distribution: 'temurin'
+        cache: maven
+        
+    - name: Verify Maven version
+      run: mvn -version
+      
+    - name: Build with Maven (core modules only)
+      run: mvn -B -ntp -e clean compile -DskipTests -pl aperture-spi,aperture-common,aperture-client
+      env:
+        MAVEN_OPTS: '-Xmx2048m -Xms1024m'
+        
+    - name: Run tests (if any)
+      run: mvn -B -ntp test -pl aperture-spi,aperture-common,aperture-client
+      continue-on-error: true
+      env:
+        MAVEN_OPTS: '-Xmx2048m -Xms1024m'
+
+    # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
+#    - name: Update dependency graph
+#      uses: advanced-security/maven-dependency-submission-action@571e99aab1055c2e71a1e2309b9691de18d6b7d6

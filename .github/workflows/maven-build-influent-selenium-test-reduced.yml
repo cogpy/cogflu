@@ -1,0 +1,58 @@
+# POM Audit - Maven Build Workflow for influent-selenium-test-reduced
+
+name: Maven Build - influent-selenium-test-reduced
+
+on:
+  push:
+    branches: [ "master", "main", "develop" ]
+    paths:
+      - 'influent-selenium-test/**'
+      - 'influent-selenium-test/pom.xml'
+  pull_request:
+    branches: [ "master", "main", "develop" ]
+    paths:
+      - 'influent-selenium-test/**'
+      - 'influent-selenium-test/pom.xml'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: Build influent-selenium-test-reduced
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: maven
+        
+    - name: Build influent-selenium-test-reduced
+      run: mvn -B clean install -DskipTests -f dependency-reduced-pom.xml
+      working-directory: influent-selenium-test
+      env:
+        MAVEN_OPTS: '-Xmx2048m -Xms1024m'
+        
+    - name: Run tests for influent-selenium-test-reduced
+      run: mvn -B test -f dependency-reduced-pom.xml
+      working-directory: influent-selenium-test
+      continue-on-error: false
+      env:
+        MAVEN_OPTS: '-Xmx2048m -Xms1024m'
+        
+    - name: Generate dependency tree
+      run: mvn dependency:tree -DoutputFile=dependency-tree.txt
+      working-directory: influent-selenium-test
+      continue-on-error: true
+      
+    - name: Upload dependency tree
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: dependency-tree-influent-selenium-test-reduced
+        path: influent-selenium-test/dependency-tree.txt
+        retention-days: 30

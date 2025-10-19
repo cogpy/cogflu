@@ -1,0 +1,63 @@
+<!doctype html>
+<html class="no-js">
+  <head>
+    <meta charset="utf-8">
+    <title>client</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- build:css styles/main.css -->
+    <link rel="stylesheet" href="bower_components/normalize-css/normalize.css">
+    <link rel="stylesheet" href="bower_components/openlayers/theme/default/style.css">
+    <link rel="stylesheet" href="styles/main.css">
+    
+    <!-- @if NODE_ENV=='development' -->
+    <link rel="stylesheet" href="styles/development.css">
+    <!-- @endif -->
+
+    <!-- endbuild -->
+
+    <!-- build:js scripts/vendor/modernizr.js -->
+    <script src="bower_components/modernizr/modernizr.js"></script>
+    <!-- endbuild -->
+  </head>
+  <body>
+    <div class="header">
+      <h3>Aperture Bootstrap</h3>
+    </div>
+
+    <div class="fullscreen">
+      <div class="fill" id="map-demo">
+      </div>
+    </div>
+
+    <div class="footer">
+      <p>&bigstar; Oculus</p>
+    </div>
+
+    <!-- build:js scripts/vendor.js -->
+    <script src="bower_components/jquery/dist/jquery.js"></script>
+    <script src="bower_components/openlayers-lib/index.js"></script>
+    <script src="bower_components/proj4/dist/proj4.js"></script>
+    <script src="bower_components/raphael/raphael.js"></script>
+    <!-- endbuild -->
+
+    <!-- Provided by server -->
+    <!-- TODO Move to bower -->
+    <script src="aperture/aperture.js"></script>
+    <!-- TODO Evaluate utility of server-provided config -->
+    <script type="text/javascript" src="rest/config.js"></script>
+
+    <!-- @if NODE_ENV=='development' -->
+    <script>
+      aperture.log.addNotifyAppender({level : 'info'});
+      aperture.log.info('Hello from Aperture Bootstrap');
+    </script>
+    <!-- @endif -->
+
+    <!-- build:js scripts/main.js -->
+    <script src="scripts/main.js"></script>
+    <script src="scripts/more.js"></script>
+    <!-- endbuild -->
+</body>
+</html>

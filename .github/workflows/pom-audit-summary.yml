@@ -1,0 +1,176 @@
+# POM Audit - All Modules Build Summary
+
+name: POM Audit - All Modules
+
+on:
+  push:
+    branches: [ "master", "main", "develop" ]
+  pull_request:
+    branches: [ "master", "main", "develop" ]
+  workflow_dispatch:
+  schedule:
+    # Run weekly on Sundays at 06:00 UTC
+    - cron: '0 6 * * 0'
+
+jobs:
+  # Foundation modules (must build first)
+  foundation:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        module: [
+          { name: "aperture-spi", path: "aperture-spi", status: "success" },
+          { name: "aperture-common", path: "aperture-common", status: "success" },
+          { name: "aperture-client", path: "aperture-client", status: "success" }
+        ]
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: maven
+        
+    - name: Build ${{ matrix.module.name }}
+      run: mvn -B clean install -DskipTests
+      working-directory: ${{ matrix.module.path }}
+      env:
+        MAVEN_OPTS: '-Xmx2048m -Xms1024m'
+
+  # Working modules (depend on foundation)
+  working-modules:
+    needs: foundation
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        module: [
+          { name: "aperture-cms", path: "aperture-cms", status: "success" },
+          { name: "aperture-geo", path: "aperture-geo", status: "success" },
+          { name: "aperture-icons", path: "aperture-icons", status: "success" },
+          { name: "aperture-layout", path: "aperture-layout", status: "success" },
+          { name: "aperture-parchment", path: "aperture-parchment", status: "success" },
+          { name: "aperture-examples", path: "aperture-examples", status: "success" },
+          { name: "ensemble-clustering", path: "ensemble-clustering", status: "success" },
+          { name: "influent-spi", path: "influent-spi", status: "success" },
+          { name: "influent-client", path: "influent-client", status: "success" },
+          { name: "influent-selenium-test", path: "influent-selenium-test", status: "success" },
+          { name: "spotless-maven-plugin", path: "spotless-maven-plugin", status: "success" }
+        ]
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: maven
+        
+    - name: Build ${{ matrix.module.name }}
+      run: mvn -B clean install -DskipTests
+      working-directory: ${{ matrix.module.path }}
+      env:
+        MAVEN_OPTS: '-Xmx2048m -Xms1024m'
+
+  # Problematic modules (expected to fail, but we test them anyway)
+  problematic-modules:
+    needs: foundation
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    strategy:
+      fail-fast: false
+      matrix:
+        module: [
+          { name: "aperture-capture-phantom", path: "aperture-capture-phantom", status: "failed", issue: "Guava API compatibility" },
+          { name: "aperture-graph", path: "aperture-graph", status: "failed", issue: "Missing javaml dependency" },
+          { name: "aperture-layout-yworks", path: "aperture-layout-yworks", status: "failed", issue: "Missing yWorks license" },
+          { name: "aperture-server-core", path: "aperture-server-core", status: "failed", issue: "Dependency resolution" },
+          { name: "aperture-server", path: "aperture-server", status: "failed", issue: "Depends on aperture-server-core" },
+          { name: "influent-server", path: "influent-server", status: "failed", issue: "Depends on server-core and capture-phantom" },
+          { name: "aperture-distribution", path: "aperture-distribution", status: "failed", issue: "Depends on aperture-server" },
+          { name: "bitcoin", path: "bitcoin", status: "failed", issue: "Depends on influent-server" },
+          { name: "kiva", path: "kiva", status: "failed", issue: "Depends on influent-server" },
+          { name: "walker", path: "walker", status: "failed", issue: "Depends on influent-server" },
+          { name: "influent-app", path: "influent-app", status: "failed", issue: "Depends on influent-server" },
+          { name: "influent-clustering-job", path: "influent-clustering-job", status: "failed", issue: "Depends on influent-server" },
+          { name: "ensemble-clustering-spark", path: "ensemble-clustering-spark", status: "failed", issue: "Dependency issues" },
+          { name: "ensemble-clustering-nested", path: "ensemble/ensemble-clustering", status: "failed", issue: "Nested module issues" },
+          { name: "ensemble", path: "ensemble", status: "failed", issue: "Aggregator for failed modules" },
+          { name: "server", path: "server", status: "failed", issue: "Dependency resolution" }
+        ]
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: maven
+        
+    - name: Attempt build of ${{ matrix.module.name }} (Expected to fail - ${{ matrix.module.issue }})
+      run: mvn -B clean install -DskipTests -fn
+      working-directory: ${{ matrix.module.path }}
+      continue-on-error: true
+      env:
+        MAVEN_OPTS: '-Xmx2048m -Xms1024m'
+
+  # Root build (depends on everything, expected to fail until issues are fixed)
+  root-build:
+    needs: [foundation, working-modules, problematic-modules]
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: maven
+        
+    - name: Attempt root build (Expected to fail until dependencies are fixed)
+      run: mvn -B clean install -DskipTests -fn
+      continue-on-error: true
+      env:
+        MAVEN_OPTS: '-Xmx4096m -Xms2048m'
+
+  # Summary job
+  summary:
+    needs: [foundation, working-modules, problematic-modules, root-build]
+    runs-on: ubuntu-latest
+    if: always()
+    
+    steps:
+    - name: Build Summary
+      run: |
+        echo "## POM Audit Build Summary" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### Foundation Modules (Required)" >> $GITHUB_STEP_SUMMARY
+        echo "- aperture-spi: ${{ needs.foundation.result }}" >> $GITHUB_STEP_SUMMARY
+        echo "- aperture-common: ${{ needs.foundation.result }}" >> $GITHUB_STEP_SUMMARY
+        echo "- aperture-client: ${{ needs.foundation.result }}" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### Working Modules" >> $GITHUB_STEP_SUMMARY
+        echo "Status: ${{ needs.working-modules.result }}" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### Problematic Modules" >> $GITHUB_STEP_SUMMARY
+        echo "Status: ${{ needs.problematic-modules.result }} (Expected to fail)" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### Root Build" >> $GITHUB_STEP_SUMMARY
+        echo "Status: ${{ needs.root-build.result }} (Expected to fail until dependencies fixed)" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "See [POM Audit Report](./docs/POM_AUDIT_REPORT.md) for detailed analysis." >> $GITHUB_STEP_SUMMARY

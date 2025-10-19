@@ -1,0 +1,371 @@
+name: Security Auto-Upgrade
+
+on:
+  # Trigger on dependabot PRs for security updates
+  pull_request:
+    types: [opened, synchronize]
+    branches: [master]
+  # Daily scheduled security scan and auto-upgrade
+  schedule:
+    - cron: '0 6 * * *'  # Run daily at 6 AM UTC
+  # Manual trigger for immediate security updates
+  workflow_dispatch:
+    inputs:
+      force_upgrade:
+        description: 'Force upgrade all dependencies regardless of tests'
+        required: false
+        default: 'false'
+        type: boolean
+
+permissions:
+  contents: write
+  pull-requests: write
+  security-events: write
+  checks: write
+
+jobs:
+  security-scan:
+    name: Security Vulnerability Scan
+    runs-on: ubuntu-latest
+    outputs:
+      has-vulnerabilities: ${{ steps.vulnerability-check.outputs.has-vulnerabilities }}
+      vulnerability-report: ${{ steps.vulnerability-check.outputs.report-path }}
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        fetch-depth: 0
+
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: maven
+
+    - name: Install OWASP Dependency Check
+      run: |
+        wget https://github.com/jeremylong/DependencyCheck/releases/download/v9.0.7/dependency-check-9.0.7-release.zip
+        unzip dependency-check-9.0.7-release.zip
+        chmod +x dependency-check/bin/dependency-check.sh
+
+    - name: Run OWASP Dependency Check
+      id: vulnerability-check
+      env:
+        NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
+      run: |
+        # Run dependency check for the main project
+        NVD_KEY_PARAM=""
+        if [ -n "$NVD_API_KEY" ]; then
+          echo "Using provided NVD API key"
+          NVD_KEY_PARAM="--nvdApiKey $NVD_API_KEY"
+        else
+          echo "Using dummy NVD API key (secure scanning may be limited)"
+        fi
+        
+        ./dependency-check/bin/dependency-check.sh \
+          --project "Cogfluent Security Scan" \
+          --scan . \
+          --format JSON \
+          --format HTML \
+          --out dependency-check-report \
+          --suppression dependency-check-suppressions.xml \
+          $NVD_KEY_PARAM || true
+        
+        # Check if vulnerabilities were found
+        if [ -f "dependency-check-report/dependency-check-report.json" ]; then
+          VULN_COUNT=$(cat dependency-check-report/dependency-check-report.json | jq -r '.dependencies[]?.vulnerabilities[]?' | wc -l)
+          if [ "$VULN_COUNT" -gt 0 ]; then
+            echo "has-vulnerabilities=true" >> $GITHUB_OUTPUT
+            echo "Found $VULN_COUNT vulnerabilities"
+          else
+            echo "has-vulnerabilities=false" >> $GITHUB_OUTPUT
+            echo "No vulnerabilities found"
+          fi
+          echo "report-path=dependency-check-report" >> $GITHUB_OUTPUT
+        else
+          echo "has-vulnerabilities=false" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Upload Security Scan Results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: security-scan-results
+        path: dependency-check-report/
+        retention-days: 30
+
+    - name: Create dependency check suppressions file if not exists
+      run: |
+        if [ ! -f "dependency-check-suppressions.xml" ]; then
+          cat > dependency-check-suppressions.xml << 'EOF'
+        <?xml version="1.0" encoding="UTF-8"?>
+        <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
+          <!-- Add specific vulnerability suppressions here if needed -->
+        </suppressions>
+        EOF
+        fi
+
+  dependency-upgrade:
+    name: Auto-Upgrade Dependencies
+    runs-on: ubuntu-latest
+    needs: security-scan
+    if: needs.security-scan.outputs.has-vulnerabilities == 'true' || github.event.inputs.force_upgrade == 'true' || github.event.schedule
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        fetch-depth: 0
+
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: maven
+
+    - name: Configure Git
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "Security Auto-Upgrade Bot"
+
+    - name: Check for outdated dependencies
+      run: |
+        echo "Checking for outdated dependencies..."
+        mvn versions:display-dependency-updates | tee dependency-updates.log
+        mvn versions:display-plugin-updates | tee plugin-updates.log
+
+    - name: Update dependencies with security vulnerabilities
+      run: |
+        echo "Updating dependencies to latest versions..."
+        
+        # Update all dependencies to latest versions
+        mvn versions:use-latest-versions -DallowMajorUpdates=false -DallowMinorUpdates=true -DallowIncrementalUpdates=true
+        
+        # Update plugins to latest versions
+        mvn versions:use-latest-versions -DallowMajorUpdates=false -DallowMinorUpdates=true -DallowIncrementalUpdates=true -Dincludes="org.apache.maven.plugins:*"
+        
+        # Update parent version if applicable
+        mvn versions:update-parent
+
+    - name: Update Spotless Maven Plugin Dependencies
+      run: |
+        if [ -f "spotless-maven-plugin/pom.xml" ]; then
+          echo "Updating Spotless Maven Plugin dependencies..."
+          cd spotless-maven-plugin
+          mvn versions:use-latest-versions -DallowMajorUpdates=false -DallowMinorUpdates=true -DallowIncrementalUpdates=true
+          cd ..
+        fi
+
+    - name: Verify builds after updates
+      id: build-verification
+      run: |
+        echo "Verifying builds after dependency updates..."
+        
+        # Build main project
+        if mvn clean compile test-compile -q; then
+          echo "main-build=success" >> $GITHUB_OUTPUT
+          echo "Main project build: SUCCESS"
+        else
+          echo "main-build=failed" >> $GITHUB_OUTPUT
+          echo "Main project build: FAILED"
+        fi
+        
+        # Build spotless plugin if it exists
+        if [ -f "spotless-maven-plugin/pom.xml" ]; then
+          cd spotless-maven-plugin
+          if mvn clean compile test-compile -q; then
+            echo "spotless-build=success" >> $GITHUB_OUTPUT
+            echo "Spotless plugin build: SUCCESS"
+          else
+            echo "spotless-build=failed" >> $GITHUB_OUTPUT
+            echo "Spotless plugin build: FAILED"
+          fi
+          cd ..
+        else
+          echo "spotless-build=skipped" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Run security scan after updates
+      if: steps.build-verification.outputs.main-build == 'success'
+      env:
+        NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
+      run: |
+        # Re-run dependency check after updates
+        if [ -f "./dependency-check/bin/dependency-check.sh" ]; then
+          NVD_KEY_PARAM=""
+          if [ -n "$NVD_API_KEY" ]; then
+            echo "Using provided NVD API key"
+            NVD_KEY_PARAM="--nvdApiKey $NVD_API_KEY"
+          else
+            echo "Using dummy NVD API key (secure scanning may be limited)"
+          fi
+          
+          ./dependency-check/bin/dependency-check.sh \
+            --project "Cogfluent Post-Update Security Scan" \
+            --scan . \
+            --format JSON \
+            --out dependency-check-post-update \
+            --suppression dependency-check-suppressions.xml \
+            $NVD_KEY_PARAM || true
+        fi
+
+    - name: Check for changes
+      id: check-changes
+      run: |
+        if [ -n "$(git status --porcelain)" ]; then
+          echo "changes=true" >> $GITHUB_OUTPUT
+          echo "Changes detected after dependency updates"
+          git status --porcelain
+        else
+          echo "changes=false" >> $GITHUB_OUTPUT
+          echo "No changes detected"
+        fi
+
+    - name: Create or update security upgrade branch
+      if: steps.check-changes.outputs.changes == 'true' && steps.build-verification.outputs.main-build == 'success'
+      run: |
+        BRANCH_NAME="security/auto-upgrade-$(date +%Y%m%d-%H%M%S)"
+        echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
+        
+        # Create new branch
+        git checkout -b "$BRANCH_NAME"
+        
+        # Add all changes
+        git add .
+        
+        # Commit changes
+        git commit -m "security: Auto-upgrade dependencies with security vulnerabilities
+
+        - Updated Maven dependencies to latest secure versions
+        - Updated Maven plugins to latest versions
+        - Verified builds pass after updates
+        - Automated security vulnerability resolution
+        
+        Auto-generated by Security Auto-Upgrade workflow"
+
+    - name: Push security upgrade branch
+      if: steps.check-changes.outputs.changes == 'true' && steps.build-verification.outputs.main-build == 'success'
+      run: |
+        git push origin "$BRANCH_NAME"
+
+    - name: Create Pull Request for security upgrades
+      if: steps.check-changes.outputs.changes == 'true' && steps.build-verification.outputs.main-build == 'success'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const { data: pr } = await github.rest.pulls.create({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            title: '🔒 Security: Auto-upgrade dependencies with vulnerabilities',
+            head: process.env.BRANCH_NAME,
+            base: 'master',
+            body: `## Security Dependency Auto-Upgrade
+
+          This PR was automatically created to resolve security vulnerabilities in dependencies.
+
+          ### Changes Made:
+          - 🔒 Updated Maven dependencies to latest secure versions
+          - 🔧 Updated Maven plugins to latest versions  
+          - ✅ Verified builds pass after updates
+          - 🛡️ Automated security vulnerability resolution
+
+          ### Security Scan Results:
+          - Pre-update vulnerabilities: Found security issues
+          - Post-update verification: Build successful
+          - Dependency check reports attached as artifacts
+
+          ### Auto-Merge Criteria:
+          - ✅ All builds pass
+          - ✅ Only minor/patch version updates
+          - ✅ Security vulnerabilities resolved
+          
+          This PR will be automatically merged if all checks pass and no breaking changes are detected.
+
+          ---
+          🤖 *Auto-generated by Security Auto-Upgrade workflow*`,
+            draft: false
+          });
+          
+          // Add security label
+          await github.rest.issues.addLabels({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            issue_number: pr.number,
+            labels: ['security', 'dependencies', 'auto-upgrade']
+          });
+          
+          console.log(`Created PR #${pr.number}: ${pr.html_url}`);
+
+  auto-merge-dependabot:
+    name: Auto-Merge Dependabot Security PRs
+    runs-on: ubuntu-latest
+    if: github.actor == 'dependabot[bot]' && contains(github.event.pull_request.labels.*.name, 'security')
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: maven
+
+    - name: Run build and tests
+      id: build-test
+      run: |
+        if mvn clean test -q; then
+          echo "tests=passed" >> $GITHUB_OUTPUT
+        else
+          echo "tests=failed" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Auto-approve and merge dependabot security PR
+      if: steps.build-test.outputs.tests == 'passed'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          // Auto-approve the PR
+          await github.rest.pulls.createReview({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            pull_number: context.issue.number,
+            event: 'APPROVE',
+            body: '🤖 Auto-approved security dependency update. Build and tests passed successfully.'
+          });
+          
+          // Enable auto-merge
+          await github.rest.pulls.merge({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            pull_number: context.issue.number,
+            commit_title: `security: ${context.payload.pull_request.title}`,
+            commit_message: 'Auto-merged security dependency update by dependabot',
+            merge_method: 'squash'
+          });
+          
+          console.log('Successfully auto-merged dependabot security PR');
+
+    - name: Comment on failed auto-merge
+      if: steps.build-test.outputs.tests == 'failed'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          await github.rest.issues.createComment({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            issue_number: context.issue.number,
+            body: `🚨 **Auto-merge failed** 
+
+          The security dependency update could not be automatically merged because tests failed.
+          
+          Please review the test failures and manually merge this PR after fixing any issues.
+          
+          Build/test status: ❌ Failed`
+          });

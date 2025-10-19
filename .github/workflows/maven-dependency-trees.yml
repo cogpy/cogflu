@@ -1,0 +1,123 @@
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+
+name: Maven Dependency Trees
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: maven
+
+    - name: Maven Dependency Tree for All
+      run: cd /home/runner/work/cogfluence && mvn -fn dependency:tree
+
+    - name: Maven Dependency Tree for Aperture Capture Phantom
+      run: cd /home/runner/work/cogfluence/aperture-capture-phantom && mvn -fn dependency:tree
+
+    - name: Maven Dependency Tree for Aperture Client
+      run: cd /home/runner/work/cogfluence/aperture-client && mvn -fn dependency:tree
+
+    - name: Maven Dependency Tree for Aperture CMS
+      run: cd /home/runner/work/cogfluence/aperture-cms && mvn -fn dependency:tree
+
+    - name: Maven Dependency Tree for Aperture Common
+      run: cd /home/runner/work/cogfluence/aperture-common && mvn -fn dependency:tree
+
+    - name: Maven Dependency Tree for Aperture Distribution
+      run: cd /home/runner/work/cogfluence/aperture-distribution && mvn -fn dependency:tree
+
+    - name: Maven Dependency Tree for Aperture Examples
+      run: cd /home/runner/work/cogfluence/aperture-examples && mvn -fn dependency:tree
+
+    - name: Maven Dependency Tree for Aperture Geo
+      run: cd /home/runner/work/cogfluence/aperture-geo && mvn -fn dependency:tree
+
+    - name: Maven Dependency Tree for Aperture Graph
+      run: cd /home/runner/work/cogfluence/aperture-graph && mvn -fn dependency:tree
+
+    - name: Maven Dependency Tree for Aperture Icons
+      run: cd /home/runner/work/cogfluence/aperture-icons && mvn -fn dependency:tree
+
+    - name: Maven Dependency Tree for Aperture Layout Yworks
+      run: cd /home/runner/work/cogfluence/aperture-layout-yworks && mvn -fn dependency:tree
+
+    - name: Maven Dependency Tree for Aperture Layout
+      run: cd /home/runner/work/cogfluence/aperture-layout && mvn -fn dependency:tree
+
+    - name: Maven Dependency Tree for Aperture Parchment
+      run: cd /home/runner/work/cogfluence/aperture-parchment && mvn -fn dependency:tree
+
+    - name: Maven Dependency Tree for Aperture Server Core
+      run: cd /home/runner/work/cogfluence/aperture-server-core && mvn -fn dependency:tree
+
+    - name: Maven Dependency Tree for Aperture Server
+      run: cd /home/runner/work/cogfluence/aperture-server && mvn -fn dependency:tree
+
+    - name: Maven Dependency Tree for Aperture SPI
+      run: cd /home/runner/work/cogfluence/aperture-spi && mvn -fn dependency:tree
+
+    - name: Maven Dependency Tree for Bitcoin
+      run: cd /home/runner/work/cogfluence/bitcoin && mvn -fn dependency:tree
+
+    - name: Maven Dependency Tree for Ensemble Clustering Spark
+      run: cd /home/runner/work/cogfluence/ensemble-clustering-spark && mvn -fn dependency:tree
+
+    - name: Maven Dependency Tree for Ensemble Clustering
+      run: cd /home/runner/work/cogfluence/ensemble-clustering && mvn -fn dependency:tree
+
+    - name: Maven Dependency Tree for Ensemble Ensemble Clustering
+      run: cd /home/runner/work/cogfluence/ensemble/ensemble-clustering && mvn -fn dependency:tree
+
+    - name: Maven Dependency Tree for Ensemble
+      run: cd /home/runner/work/cogfluence/ensemble && mvn -fn dependency:tree
+
+    - name: Maven Dependency Tree for Influent App
+      run: cd /home/runner/work/cogfluence/influent-app && mvn -fn dependency:tree
+
+    - name: Maven Dependency Tree for Influent Client
+      run: cd /home/runner/work/cogfluence/influent-client && mvn -fn dependency:tree
+
+    - name: Maven Dependency Tree for Influent Clustering
+      run: cd /home/runner/work/cogfluence/influent-clustering-job && mvn -fn dependency:tree
+
+    - name: Maven Dependency Tree for Influent Selenium Test
+      run: cd /home/runner/work/cogfluence/influent-selenium-test && mvn -fn dependency:tree
+
+    - name: Maven Dependency Tree for Influent Server
+      run: cd /home/runner/work/cogfluence/influent-server && mvn -fn dependency:tree
+
+    - name: Maven Dependency Tree for Influent SPI
+      run: cd /home/runner/work/cogfluence/influent-spi && mvn -fn dependency:tree
+
+    - name: Maven Dependency Tree for Kiva
+      run: cd /home/runner/work/cogfluence/kiva && mvn -fn dependency:tree
+
+    - name: Maven Dependency Tree for Server
+      run: cd /home/runner/work/cogfluence/server && mvn -fn dependency:tree
+
+    - name: Maven Dependency Tree for Spotless
+      run: cd /home/runner/work/cogfluence/spotless-maven-plugin && mvn -fn dependency:tree
+
+    - name: Maven Dependency Tree for Walker
+      run: cd /home/runner/work/cogfluence/walker && mvn -fn dependency:tree
+
+    # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
+    - name: Update dependency graph
+      uses: advanced-security/maven-dependency-submission-action@571e99aab1055c2e71a1e2309b9691de18d6b7d6
