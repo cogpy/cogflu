@@ -305,6 +305,9 @@
 	</build>
 	
 	<modules>
+		<!-- OpenCog Integration (new) -->
+		<module>opencog-integration</module>
+		
 		<!-- Aperture dependencies (must be built first) -->
 		<module>aperture-common</module>
 		<module>aperture-client</module>
