@@ -32,14 +32,14 @@ import java.util.List;
 import java.util.Map;
 import oculus.aperture.spi.common.Properties;
 import org.apache.avro.AvroRemoteException;
+import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrQuery.ORDER;
-import org.apache.solr.client.solrj.SolrServer;
-import org.apache.solr.client.solrj.impl.HttpSolrServer;
+import org.apache.solr.client.solrj.impl.HttpSolrClient;
 
 public class SolrLinkSearch extends DataViewLinkSearch implements FL_LinkSearch {
 
-  private SolrServer _solr;
+  private SolrClient _solr;
   private Properties _config;
 
   // ----------------------------------------------------------------------
@@ -57,7 +57,7 @@ public class SolrLinkSearch extends DataViewLinkSearch implements FL_LinkSearch 
       url = config.getString("influent.midtier.solr.url", "http://localhost:8983");
     }
 
-    _solr = new HttpSolrServer(url);
+    _solr = new HttpSolrClient.Builder(url).build();
     _config = config;
   }
 
@@ -138,7 +138,7 @@ public class SolrLinkSearch extends DataViewLinkSearch implements FL_LinkSearch 
                   ? "score"
                   : ob.getPropertyKey();
 
-          query.addSortField(key, ob.getAscending() ? ORDER.asc : ORDER.desc);
+          query.addSort(key, ob.getAscending() ? ORDER.asc : ORDER.desc);
         }
       }
 
@@ -178,7 +178,7 @@ public class SolrLinkSearch extends DataViewLinkSearch implements FL_LinkSearch 
 
   public SolrLinkSearchIterator buildSolrLinkSearchIterator(
       DataNamespaceHandler namespaceHandler,
-      SolrServer solr,
+      SolrClient solr,
       SolrQuery query,
       Properties config,
       FL_LevelOfDetail levelOfDetail,
