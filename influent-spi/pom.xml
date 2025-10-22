@@ -69,6 +69,28 @@
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<version>3.1.0</version>
+				<executions>
+					<execution>
+						<id>fix-avro-hashcode</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<target>
+								<replaceregexp file="${project.basedir}/src/main/java/influent/idl/FL_SearchResult.java"
+									match="result = 31 \* result \+ \(result == null \? 0 : result\.hashCode\(\)\);"
+									replace="result = 31 * result + (this.result == null ? 0 : this.result.hashCode());"
+									byline="true"/>
+							</target>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.14.1</version>
 				<configuration>
