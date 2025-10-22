@@ -68,7 +68,7 @@ public class EntityAggregatedLinks {
       ContextRead srcContext,
       ContextReadWrite dstContext,
       ClusterContextCache cache)
-      throws DataAccessException, AvroRemoteException {
+      throws DataAccessException {
     return getRelatedAggregatedLinks(
         Collections.singletonList(entityId),
         direction,
@@ -110,7 +110,7 @@ public class EntityAggregatedLinks {
       ContextRead srcContext,
       ContextReadWrite dstContext,
       ClusterContextCache cache)
-      throws DataAccessException, AvroRemoteException {
+      throws DataAccessException {
 
     try {
       s_logger.info("Started getRelatedAggregateLinks for " + entityIds.size() + " entities");
@@ -575,8 +575,7 @@ public class EntityAggregatedLinks {
   private static List<String> buildEntityAncestorMap(
       Collection<? extends Object> things,
       Map<String, String> entityAncestorIndex,
-      ContextRead context)
-      throws AvroRemoteException {
+      ContextRead context) {
     List<String> entityIds = new LinkedList<String>();
 
     for (Object entity : things) {
@@ -601,8 +600,7 @@ public class EntityAggregatedLinks {
     return entityIds;
   }
 
-  public static List<String> fetchLeaves(FL_Cluster cluster, ContextRead context)
-      throws AvroRemoteException {
+  public static List<String> fetchLeaves(FL_Cluster cluster, ContextRead context) {
     List<String> eids = new ArrayList<String>();
     Deque<FL_Cluster> toProcess = new LinkedList<FL_Cluster>();
     toProcess.addLast(cluster);
@@ -629,13 +627,11 @@ public class EntityAggregatedLinks {
     return eids;
   }
 
-  public static List<String> fetchLeaves(String clusterId, ContextRead context)
-      throws AvroRemoteException {
+  public static List<String> fetchLeaves(String clusterId, ContextRead context) {
     return fetchLeaves(context.getCluster(clusterId), context);
   }
 
-  public static List<String> fetchLeaves(List<String> clusterIds, ContextRead context)
-      throws AvroRemoteException {
+  public static List<String> fetchLeaves(List<String> clusterIds, ContextRead context) {
     List<String> eids = new ArrayList<String>();
 
     for (String clusterId : clusterIds) {

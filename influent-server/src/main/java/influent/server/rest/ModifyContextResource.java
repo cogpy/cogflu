@@ -41,7 +41,6 @@ import java.util.LinkedList;
 import java.util.List;
 import oculus.aperture.common.JSONProperties;
 import oculus.aperture.common.rest.ApertureServerResource;
-import org.apache.avro.AvroRemoteException;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -207,25 +206,20 @@ public class ModifyContextResource extends ApertureServerResource {
     } catch (JSONException je) {
       throw new ResourceException(
           Status.CLIENT_ERROR_BAD_REQUEST, "Failed to parse modify context request", je);
-    } catch (AvroRemoteException are) {
-      throw new ResourceException(
-          Status.SERVER_ERROR_INTERNAL, "Error serializing context modifications.", are);
     } catch (IllegalArgumentException iae) {
       throw new ResourceException(
           Status.CLIENT_ERROR_BAD_REQUEST, "Failed to execute modify context request", iae);
     }
   }
 
-  private void create(ContextReadWrite parentContext, String contextId, String sessionId)
-      throws AvroRemoteException {
+  private void create(ContextReadWrite parentContext, String contextId, String sessionId) {
     if (contextId != null && !contextId.isEmpty()) {
       // associate context with parent
       parentContext.addChildContext(contextId);
     }
   }
 
-  private void delete(ContextReadWrite parentContext, List<String> contextIds, String sessionId)
-      throws AvroRemoteException {
+  private void delete(ContextReadWrite parentContext, List<String> contextIds, String sessionId) {
 
     for (String contextId : contextIds) {
       // delete the context
@@ -243,7 +237,7 @@ public class ModifyContextResource extends ApertureServerResource {
       String sourceContextId,
       ContextReadWrite targetContext,
       String sessionId)
-      throws JSONException, AvroRemoteException, IllegalArgumentException {
+      throws JSONException, IllegalArgumentException {
 
     String targetContextId = targetContext.getUid();
 
@@ -355,7 +349,7 @@ public class ModifyContextResource extends ApertureServerResource {
 
   private List<Object> remove(
       List<String> childIds, ContextReadWrite targetContext, String sessionId)
-      throws JSONException, AvroRemoteException {
+      throws JSONException {
 
     String targetContextId = targetContext.getUid();
 

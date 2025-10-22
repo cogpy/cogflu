@@ -57,6 +57,7 @@ public class DateTimeParser {
         }
 
       } catch (Exception e) {
+        throw new RuntimeException(e);
       }
     }
 

@@ -157,7 +157,7 @@ public class DataAccessHelper {
 
   public static DateTime getStartDate(FL_DateRange date) {
 
-    if (date == null || date.getStartDate() == null) {
+    if (date == null) {
       return null;
     }
 
@@ -174,19 +174,19 @@ public class DataAccessHelper {
 
     switch (date.getDurationPerBin().getInterval()) {
       case SECONDS:
-        return d.plusSeconds(date.getNumBins().intValue());
+        return d.plusSeconds((int) date.getNumBins());
       case HOURS:
-        return d.plusHours(date.getNumBins().intValue());
+        return d.plusHours((int) date.getNumBins());
       case DAYS:
-        return d.plusDays(date.getNumBins().intValue());
+        return d.plusDays((int) date.getNumBins());
       case WEEKS:
-        return d.plusWeeks(date.getNumBins().intValue());
+        return d.plusWeeks((int) date.getNumBins());
       case MONTHS:
-        return d.plusMonths(date.getNumBins().intValue());
+        return d.plusMonths((int) date.getNumBins());
       case QUARTERS:
-        return d.plusMonths(date.getNumBins().intValue() * 3);
+        return d.plusMonths((int) date.getNumBins() * 3);
       case YEARS:
-        return d.plusYears(date.getNumBins().intValue());
+        return d.plusYears((int) date.getNumBins());
     }
 
     return d;
@@ -208,8 +208,8 @@ public class DataAccessHelper {
     Calendar c = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
     c.setTimeInMillis(date.getStartDate());
 
-    List<Date> dates = new ArrayList<Date>(date.getNumBins().intValue());
-    for (int i = 0; i < date.getNumBins().intValue(); i++) {
+    List<Date> dates = new ArrayList<Date>((int) date.getNumBins());
+    for (int i = 0; i < (int) date.getNumBins(); i++) {
       dates.add(c.getTime());
       switch (date.getDurationPerBin().getInterval()) {
         case SECONDS:

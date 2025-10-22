@@ -49,7 +49,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import oculus.aperture.spi.common.Properties;
-import org.apache.avro.AvroRemoteException;
 
 public class EntityClusterFactory {
 
@@ -160,6 +159,7 @@ public class EntityClusterFactory {
     try {
       tag = FL_PropertyTag.valueOf(tagOrName);
     } catch (Exception e) {
+      throw new RuntimeException(e);
     }
 
     if (tag != null) {
@@ -254,11 +254,7 @@ public class EntityClusterFactory {
                   .setLon(null)
                   .setCc((String) key)
                   .build();
-          try {
-            geocoder.geocode(Collections.singletonList(geo));
-          } catch (AvroRemoteException e) {
-            /* ignore */
-          }
+          geocoder.geocode(Collections.singletonList(geo));
           range = geo;
         } else if (key instanceof Number) { // compute the average for the numeric value
           double size =

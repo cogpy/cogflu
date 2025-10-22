@@ -46,7 +46,6 @@ import java.util.Map;
 import oculus.aperture.common.JSONProperties;
 import oculus.aperture.common.rest.ApertureServerResource;
 import oculus.aperture.spi.common.Properties;
-import org.apache.avro.AvroRemoteException;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -151,9 +150,6 @@ public class LinkSearchResource extends ApertureServerResource {
           Status.CLIENT_ERROR_BAD_REQUEST,
           "Unable to create JSON object from supplied options string",
           e);
-    } catch (AvroRemoteException e) {
-      throw new ResourceException(
-          Status.SERVER_ERROR_INTERNAL, "Exception during AVRO processing", e);
     }
 
     if (results == null) {
@@ -163,8 +159,7 @@ public class LinkSearchResource extends ApertureServerResource {
   }
 
   private JSONObject buildTransactionResults(
-      FL_SearchResults results, List<FL_OrderBy> orderBy, String sessionId)
-      throws AvroRemoteException, JSONException {
+      FL_SearchResults results, List<FL_OrderBy> orderBy, String sessionId) throws JSONException {
     Map<String, Double> matchScores = new HashMap<String, Double>();
     List<FL_Link> links = new ArrayList<FL_Link>();
 
@@ -318,7 +313,7 @@ public class LinkSearchResource extends ApertureServerResource {
     return terms;
   }
 
-  private PropertyMatchBuilder processSearchTerms(String query) throws AvroRemoteException {
+  private PropertyMatchBuilder processSearchTerms(String query) {
     // Extract a map of FL_PropertyMatchDescriptors by type from the query
     s_logger.info("Processing transaction search terms from: " + query);
     final PropertyMatchBuilder terms =

@@ -51,7 +51,6 @@ import oculus.aperture.spi.store.ConflictException;
 import oculus.aperture.spi.store.ContentService;
 import oculus.aperture.spi.store.ContentService.Document;
 import oculus.aperture.spi.store.ContentService.DocumentDescriptor;
-import org.apache.avro.AvroRemoteException;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.restlet.data.CacheDirective;
@@ -249,7 +248,7 @@ public class LinkExportResource extends ApertureServerResource {
     return terms;
   }
 
-  private PropertyMatchBuilder processSearchTerms(String query) throws AvroRemoteException {
+  private PropertyMatchBuilder processSearchTerms(String query) {
     final PropertyMatchBuilder terms =
         new PropertyMatchBuilder(
             query,

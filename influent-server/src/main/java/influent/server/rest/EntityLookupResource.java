@@ -34,7 +34,6 @@ import java.util.ArrayList;
 import java.util.List;
 import oculus.aperture.common.JSONProperties;
 import oculus.aperture.common.rest.ApertureServerResource;
-import org.apache.avro.AvroRemoteException;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -112,11 +111,6 @@ public class EntityLookupResource extends ApertureServerResource {
 
       return new StringRepresentation(result.toString(), MediaType.APPLICATION_JSON);
     } catch (JSONException e) {
-      throw new ResourceException(
-          Status.CLIENT_ERROR_BAD_REQUEST,
-          "Unable to create JSON object from supplied options string",
-          e);
-    } catch (AvroRemoteException e) {
       throw new ResourceException(
           Status.CLIENT_ERROR_BAD_REQUEST,
           "Unable to create JSON object from supplied options string",

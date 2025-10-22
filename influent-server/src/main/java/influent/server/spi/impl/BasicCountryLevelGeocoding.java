@@ -38,7 +38,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.apache.avro.AvroRemoteException;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -155,7 +154,7 @@ public class BasicCountryLevelGeocoding implements FL_Geocoding {
 
   /** This is a simple placeholder implementation that searches each address for a country name. */
   @Override
-  public boolean geocode(List<FL_GeoData> locations) throws AvroRemoteException {
+  public boolean geocode(List<FL_GeoData> locations) {
     boolean changed = false;
 
     for (FL_GeoData location : locations) {
@@ -224,7 +223,7 @@ public class BasicCountryLevelGeocoding implements FL_Geocoding {
    * codes if a country result is not to be null.
    */
   @Override
-  public List<FL_Country> getCountries(List<FL_GeoData> locations) throws AvroRemoteException {
+  public List<FL_Country> getCountries(List<FL_GeoData> locations) {
     final List<FL_Country> countries = new ArrayList<FL_Country>(locations.size());
 
     for (FL_GeoData location : locations) {

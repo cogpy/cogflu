@@ -48,7 +48,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import org.apache.avro.AvroRemoteException;
 
 public class GeoEntityClusterer extends BaseEntityClusterer {
   private FL_Geocoding geoCoder;
@@ -76,38 +75,34 @@ public class GeoEntityClusterer extends BaseEntityClusterer {
   private String toGeoKey(FL_GeoData geo) {
     String key = "Unknown";
 
-    try {
-      List<FL_Country> country = null;
-      switch (level) {
-        case Continent:
-          country = geoCoder.getCountries(Collections.singletonList(geo));
-          if (country != null && !country.isEmpty() && country.get(0) != null) {
-            FL_ContinentCode continent = country.get(0).getContinent();
-            if (continent != null && !continent.name().isEmpty()) {
-              key = continent.name();
-            }
+    List<FL_Country> country = null;
+    switch (level) {
+      case Continent:
+        country = geoCoder.getCountries(Collections.singletonList(geo));
+        if (country != null && !country.isEmpty() && country.get(0) != null) {
+          FL_ContinentCode continent = country.get(0).getContinent();
+          if (continent != null && !continent.name().isEmpty()) {
+            key = continent.name();
           }
-          break;
-        case Region:
-          country = geoCoder.getCountries(Collections.singletonList(geo));
-          if (country != null && !country.isEmpty() && country.get(0) != null) {
-            String region = country.get(0).getRegion();
-            if (region != null && !region.isEmpty()) {
-              key = country.get(0).getRegion();
-            }
+        }
+        break;
+      case Region:
+        country = geoCoder.getCountries(Collections.singletonList(geo));
+        if (country != null && !country.isEmpty() && country.get(0) != null) {
+          String region = country.get(0).getRegion();
+          if (region != null && !region.isEmpty()) {
+            key = country.get(0).getRegion();
           }
-          break;
-        case Country:
-          String cc = geo.getCc();
-          if (cc != null && !cc.isEmpty()) {
-            key = cc;
-          }
-          break;
-        default:
-          break;
-      }
-    } catch (AvroRemoteException e) {
-      log.error("Cluster geo field is not a valid FL_GeoData object! Ignoring.");
+        }
+        break;
+      case Country:
+        String cc = geo.getCc();
+        if (cc != null && !cc.isEmpty()) {
+          key = cc;
+        }
+        break;
+      default:
+        break;
     }
     return key;
   }
@@ -181,16 +176,12 @@ public class GeoEntityClusterer extends BaseEntityClusterer {
           || geo.getLat() == null
           || geo.getLon() == null
           || (geo.getLat() == 0 && geo.getLon() == 0)) {
-        try {
-          List<FL_Country> countries = geoCoder.getCountries(Collections.singletonList(geo));
-          if (!countries.isEmpty()) {
-            FL_Country country = countries.get(0);
-            if (country != null) {
-              geo = country.getCountry();
-            }
+        List<FL_Country> countries = geoCoder.getCountries(Collections.singletonList(geo));
+        if (!countries.isEmpty()) {
+          FL_Country country = countries.get(0);
+          if (country != null) {
+            geo = country.getCountry();
           }
-        } catch (AvroRemoteException e) {
-          /* ignore */
         }
       }
     }

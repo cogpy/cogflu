@@ -46,7 +46,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.apache.avro.AvroRemoteException;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -326,6 +325,7 @@ public class PropertyMatchBuilder {
             try {
               i = Integer.valueOf((String) obj);
             } catch (Exception e) {
+              throw new RuntimeException(e);
             }
 
             if (i == null) {
@@ -348,16 +348,12 @@ public class PropertyMatchBuilder {
 
         List<String> leafIds = null;
         String uid = (String) values.get(i);
-        try {
-          leafIds = _clusterDataAccess.getLeafIds(Collections.singletonList(uid), null, true);
+        leafIds = _clusterDataAccess.getLeafIds(Collections.singletonList(uid), null, true);
 
-          for (String id : leafIds) {
-            if (!id.equals(uid)) {
-              values.add(id);
-            }
+        for (String id : leafIds) {
+          if (!id.equals(uid)) {
+            values.add(id);
           }
-        } catch (AvroRemoteException e) {
-          e.printStackTrace();
         }
       }
     }
@@ -421,6 +417,7 @@ public class PropertyMatchBuilder {
         termBuilder.setWeight(weight);
 
       } catch (Exception e) {
+        throw new RuntimeException(e);
       }
     }
 
@@ -438,6 +435,7 @@ public class PropertyMatchBuilder {
         isFuzzy = true;
 
       } catch (Exception e) {
+        throw new RuntimeException(e);
       }
     }
 

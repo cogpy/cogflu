@@ -23,7 +23,6 @@ import influent.idl.FL_DataAccess;
 import influent.server.utilities.GuidValidator;
 import oculus.aperture.common.JSONProperties;
 import oculus.aperture.common.rest.ApertureServerResource;
-import org.apache.avro.AvroRemoteException;
 import org.json.JSONException;
 import org.restlet.data.Status;
 import org.restlet.representation.StringRepresentation;
@@ -56,8 +55,6 @@ public class DataSummaryResource extends ApertureServerResource {
       }
 
       return new StringRepresentation(dataAccess.getDataSummary().toString());
-    } catch (AvroRemoteException are) {
-      throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Data access error.", are);
     } catch (JSONException je) {
       throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "JSON parse error.", je);
     }

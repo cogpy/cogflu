@@ -35,7 +35,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import oculus.aperture.common.JSONProperties;
 import oculus.aperture.common.rest.ApertureServerResource;
-import org.apache.avro.AvroRemoteException;
 import org.joda.time.DateTime;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -142,8 +141,6 @@ public class AggregatedLinkResource extends ApertureServerResource {
       return new StringRepresentation(result.toString(), MediaType.APPLICATION_JSON);
 
     } catch (JSONException e) {
-      throw new ResourceException(Status.SERVER_ERROR_INTERNAL, e.getMessage());
-    } catch (AvroRemoteException e) {
       throw new ResourceException(Status.SERVER_ERROR_INTERNAL, e.getMessage());
     }
   }

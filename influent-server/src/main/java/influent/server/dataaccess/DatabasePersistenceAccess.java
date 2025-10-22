@@ -25,7 +25,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import org.apache.avro.AvroRemoteException;
 import org.joda.time.DateTime;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -64,7 +63,7 @@ public class DatabasePersistenceAccess implements FL_Persistence {
   }
 
   @Override
-  public FL_PersistenceState persistData(String sessionId, String data) throws AvroRemoteException {
+  public FL_PersistenceState persistData(String sessionId, String data) {
 
     FL_PersistenceState state = null;
     Connection connection = null;
@@ -134,10 +133,10 @@ public class DatabasePersistenceAccess implements FL_Persistence {
       connection.close();
     } catch (ClassNotFoundException e) {
       state = FL_PersistenceState.ERROR;
-      throw new AvroRemoteException(e);
+      throw new RuntimeException(e);
     } catch (SQLException e) {
       state = FL_PersistenceState.ERROR;
-      throw new AvroRemoteException(e);
+      throw new RuntimeException(e);
     } finally {
       try {
         connection.close();
@@ -150,7 +149,7 @@ public class DatabasePersistenceAccess implements FL_Persistence {
   }
 
   @Override
-  public String getData(String sessionId) throws AvroRemoteException {
+  public String getData(String sessionId) {
 
     String data = null;
     Connection connection = null;
@@ -199,9 +198,9 @@ public class DatabasePersistenceAccess implements FL_Persistence {
       stmt.close();
       connection.close();
     } catch (ClassNotFoundException e) {
-      throw new AvroRemoteException(e);
+      throw new RuntimeException(e);
     } catch (SQLException e) {
-      throw new AvroRemoteException(e);
+      throw new RuntimeException(e);
     } finally {
       try {
         connection.close();

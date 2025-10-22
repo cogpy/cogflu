@@ -30,7 +30,6 @@ import java.util.List;
 import oculus.aperture.common.JSONProperties;
 import oculus.aperture.common.rest.ApertureServerResource;
 import oculus.aperture.spi.common.Properties;
-import org.apache.avro.AvroRemoteException;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.restlet.data.Status;
@@ -105,15 +104,6 @@ public class LinkDetailsResource extends ApertureServerResource {
       } else {
         return null;
       }
-    } catch (AvroRemoteException e) {
-      s_logger.info(
-          String.format(
-              "AvroRemoteException occurred Getting transaction details for transaction id: %s; %s",
-              transactionId, e.getMessage()));
-      throw new ResourceException(
-          Status.CLIENT_ERROR_BAD_REQUEST,
-          "Unable to create JSON object from supplied options string",
-          e);
     } catch (JSONException je) {
       s_logger.info(
           String.format(

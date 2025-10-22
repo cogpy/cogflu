@@ -26,7 +26,6 @@ import influent.server.utilities.RestClient;
 import java.io.IOException;
 import java.util.List;
 import javax.ws.rs.core.Response.Status.Family;
-import org.apache.avro.AvroRemoteException;
 import org.apache.avro.Schema;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -44,43 +43,41 @@ public class QuBEClient extends RestClient implements FL_PatternSearch {
   }
 
   @Override
-  public Void setTimeout(FL_Future future, long timeout) throws AvroRemoteException {
+  public void setTimeout(FL_Future future, long timeout) {
     // TODO Auto-generated method stub
-    return null;
   }
 
   @Override
-  public boolean getCompleted(FL_Future future) throws AvroRemoteException {
+  public boolean getCompleted(FL_Future future) {
     // TODO Auto-generated method stub
     return false;
   }
 
   @Override
-  public String getError(FL_Future future) throws AvroRemoteException {
+  public String getError(FL_Future future) {
     // TODO Auto-generated method stub
     return null;
   }
 
   @Override
-  public double getProgress(FL_Future future) throws AvroRemoteException {
+  public double getProgress(FL_Future future) {
     // TODO Auto-generated method stub
     return 0;
   }
 
   @Override
-  public long getExpectedDuration(FL_Future future) throws AvroRemoteException {
+  public long getExpectedDuration(FL_Future future) {
     // TODO Auto-generated method stub
     return 0;
   }
 
   @Override
-  public Void stop(FL_Future future) throws AvroRemoteException {
+  public void stop(FL_Future future) {
     // TODO Auto-generated method stub
-    return null;
   }
 
   @Override
-  public List<FL_Future> getFutures() throws AvroRemoteException {
+  public List<FL_Future> getFutures() {
     // TODO Auto-generated method stub
     return null;
   }
@@ -92,8 +89,7 @@ public class QuBEClient extends RestClient implements FL_PatternSearch {
       long start,
       long max,
       FL_BoundedRange dateRange,
-      boolean useAptima)
-      throws AvroRemoteException {
+      boolean useAptima) {
     try {
       // init
       Form form = new Form();
@@ -118,6 +114,7 @@ public class QuBEClient extends RestClient implements FL_PatternSearch {
         }
         exampleJson = jo.toString();
       } catch (JSONException e) {
+        throw new RuntimeException(e);
       }
 
       // args
@@ -187,6 +184,7 @@ public class QuBEClient extends RestClient implements FL_PatternSearch {
           }
           resultJson = jo.toString();
         } catch (JSONException e) {
+          throw new RuntimeException(e);
         }
 
         return SerializationHelper.fromJson(resultJson, FL_PatternSearchResults.getClassSchema());
@@ -195,37 +193,37 @@ public class QuBEClient extends RestClient implements FL_PatternSearch {
         try {
           extra = "\n\n" + response.getEntity(String.class) + "\nReceived as server response";
         } catch (Exception e) {
+          throw new RuntimeException(e);
         }
 
-        throw new AvroRemoteException(response.getClientResponseStatus().getReasonPhrase() + extra);
+        throw new RuntimeException(response.getClientResponseStatus().getReasonPhrase() + extra);
       }
     } catch (IOException ioe) {
-      throw new AvroRemoteException(ioe);
+      throw new RuntimeException(ioe);
     }
   }
 
   @Override
   public Object searchByTemplate(
-      String template, String service, long start, long max, FL_BoundedRange dateRange)
-      throws AvroRemoteException {
+      String template, String service, long start, long max, FL_BoundedRange dateRange) {
     // TODO Auto-generated method stub
     return null;
   }
 
   @Override
-  public FL_PatternSearchResults getResults(FL_Future future) throws AvroRemoteException {
+  public FL_PatternSearchResults getResults(FL_Future future) {
     // TODO Auto-generated method stub
     return null;
   }
 
   @Override
-  public List<FL_PatternDescriptor> getPatternTemplates() throws AvroRemoteException {
+  public List<FL_PatternDescriptor> getPatternTemplates() {
     // TODO Auto-generated method stub
     return null;
   }
 
   @Override
-  public List<FL_Service> getServices() throws AvroRemoteException {
+  public List<FL_Service> getServices() {
     // TODO Auto-generated method stub
     return null;
   }

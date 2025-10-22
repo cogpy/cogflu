@@ -34,7 +34,6 @@ import java.util.Map;
 import oculus.aperture.common.JSONProperties;
 import oculus.aperture.common.rest.ApertureServerResource;
 import oculus.aperture.spi.common.Properties;
-import org.apache.avro.AvroRemoteException;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -185,8 +184,6 @@ public class TransactionTableResource extends ApertureServerResource {
 
     } catch (JSONException je) {
       throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "JSON parse error.", je);
-    } catch (AvroRemoteException dae) {
-      throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Data access error.", dae);
     }
   }
 

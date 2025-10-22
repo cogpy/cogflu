@@ -52,7 +52,7 @@ public class ResultFormatter {
   public static String formatDur(FL_Duration d) {
     if (d == null) return "";
 
-    int t = d.getNumIntervals().intValue();
+    int t = (int) d.getNumIntervals();
     if (t == 0) return "-";
 
     ReadablePeriod period = null;

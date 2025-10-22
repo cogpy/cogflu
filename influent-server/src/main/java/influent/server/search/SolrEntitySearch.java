@@ -35,7 +35,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import oculus.aperture.spi.common.Properties;
-import org.apache.avro.AvroRemoteException;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrQuery.ORDER;
@@ -68,8 +67,7 @@ public class SolrEntitySearch extends DataViewEntitySearch {
       List<FL_OrderBy> orderBy,
       long start,
       long max,
-      FL_LevelOfDetail lod)
-      throws AvroRemoteException {
+      FL_LevelOfDetail lod) {
 
     ArrayList<FL_SearchResult> results = new ArrayList<FL_SearchResult>();
     SolrEntitySearchIterator ssr;

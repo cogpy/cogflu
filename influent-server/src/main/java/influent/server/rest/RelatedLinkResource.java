@@ -29,7 +29,6 @@ import influent.server.utilities.*;
 import java.util.*;
 import oculus.aperture.common.JSONProperties;
 import oculus.aperture.common.rest.ApertureServerResource;
-import org.apache.avro.AvroRemoteException;
 import org.joda.time.DateTime;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -261,10 +260,8 @@ public class RelatedLinkResource extends ApertureServerResource {
 
       return new StringRepresentation(result.toString(), MediaType.APPLICATION_JSON);
 
-    } catch (AvroRemoteException e) {
-      throw new ResourceException(Status.SERVER_ERROR_INTERNAL, e.getMessage());
     } catch (JSONException e) {
-      throw new ResourceException(Status.SERVER_ERROR_INTERNAL, e.getMessage());
+      throw new ResourceException(e);
     }
   }
 }

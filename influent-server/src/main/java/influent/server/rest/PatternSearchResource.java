@@ -55,7 +55,6 @@ import java.util.List;
 import java.util.Map;
 import oculus.aperture.common.JSONProperties;
 import oculus.aperture.common.rest.ApertureServerResource;
-import org.apache.avro.AvroRemoteException;
 import org.joda.time.DateTime;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -195,14 +194,9 @@ public class PatternSearchResource extends ApertureServerResource {
       } else {
         s_logger.info("Executing pattern search: " + SerializationHelper.toJson(example));
 
-        try {
-          response =
-              patternSearcher.searchByExample(
-                  example, "QuBE", (long) startIndex, (long) resultLimit, dateRange, useAptima);
-        } catch (AvroRemoteException are) {
-          // FIXME: Temporarily suppressing QuBE errors until version is updated (#7758)
-          // throw new RuntimeException("Error reported by Query by Example. ", are);
-        }
+        response =
+            patternSearcher.searchByExample(
+                example, "QuBE", (long) startIndex, (long) resultLimit, dateRange, useAptima);
       }
 
       final FL_PatternSearchResults searchResults;
@@ -455,9 +449,6 @@ public class PatternSearchResource extends ApertureServerResource {
           Status.CLIENT_ERROR_BAD_REQUEST,
           "Unable to create JSON object from supplied options string",
           e);
-    } catch (AvroRemoteException e) {
-      throw new ResourceException(
-          Status.CLIENT_ERROR_BAD_REQUEST, "Exception during AVRO processing", e);
     } catch (Exception e) {
       throw new ResourceException(
           Status.CLIENT_ERROR_BAD_REQUEST, "Exception during pattern descriptor processing", e);

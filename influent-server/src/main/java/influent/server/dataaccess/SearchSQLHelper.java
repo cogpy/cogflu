@@ -43,7 +43,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.*;
-import org.apache.avro.AvroRemoteException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -472,8 +471,7 @@ public class SearchSQLHelper {
       Map<String, List<FL_PropertyMatchDescriptor>> termMap,
       List<FL_OrderBy> orderBy,
       FL_LevelOfDetail levelOfDetail,
-      boolean limitResults)
-      throws AvroRemoteException {
+      boolean limitResults) {
 
     List<Object> results = new ArrayList<Object>();
 
@@ -635,8 +633,7 @@ public class SearchSQLHelper {
       List<Object> result,
       List<String> colMap,
       String type,
-      String fieldName)
-      throws AvroRemoteException {
+      String fieldName) {
     // Get values for fields in composite properties
 
     PropertyField pf = _applicationConfiguration.getField(pd.getKey(), fieldName);
@@ -660,8 +657,7 @@ public class SearchSQLHelper {
     return null;
   }
 
-  protected List<Object> getPropertyValuesFromColumn(Object column, FL_PropertyDescriptor pd)
-      throws AvroRemoteException {
+  protected List<Object> getPropertyValuesFromColumn(Object column, FL_PropertyDescriptor pd) {
     // Get values for a property from the results set
 
     if (column == null) {
@@ -689,7 +685,7 @@ public class SearchSQLHelper {
         column = sb.toString();
       }
     } catch (Exception e) {
-      throw new AvroRemoteException(e);
+      throw new RuntimeException(e);
     }
 
     if (isMultiValue) {

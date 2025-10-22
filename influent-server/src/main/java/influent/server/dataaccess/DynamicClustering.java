@@ -32,7 +32,6 @@ import influent.server.utilities.SQLConnectionPool;
 import java.sql.SQLException;
 import java.util.*;
 import oculus.aperture.spi.common.Properties;
-import org.apache.avro.AvroRemoteException;
 
 /**
  * Dynamic clustering impl.
@@ -71,8 +70,7 @@ public class DynamicClustering extends AbstractClusteringDataAccess implements F
 
   @Override
   public List<String> clusterEntitiesById(
-      List<String> entityIds, String sourceContextId, String targetContextId)
-      throws AvroRemoteException {
+      List<String> entityIds, String sourceContextId, String targetContextId) {
 
     List<String> accountIds = InfluentId.filterInfluentIds(entityIds, InfluentId.ACCOUNT);
     List<String> clusterIds = InfluentId.filterInfluentIds(entityIds, InfluentId.CLUSTER);
@@ -90,8 +88,7 @@ public class DynamicClustering extends AbstractClusteringDataAccess implements F
       List<FL_Entity> entities,
       List<FL_Cluster> clusters,
       String sourceContextId,
-      String targetContextId)
-      throws AvroRemoteException {
+      String targetContextId) {
 
     List<String> rootIds = new ArrayList<String>();
 
@@ -159,8 +156,7 @@ public class DynamicClustering extends AbstractClusteringDataAccess implements F
     return rootIds;
   }
 
-  private List<FL_Entity> getImmutableChildEntities(List<FL_Cluster> immutableClusters)
-      throws AvroRemoteException {
+  private List<FL_Entity> getImmutableChildEntities(List<FL_Cluster> immutableClusters) {
     List<FL_Entity> entities = new ArrayList<FL_Entity>();
 
     for (FL_Cluster immutableCluster : immutableClusters) {
@@ -171,8 +167,7 @@ public class DynamicClustering extends AbstractClusteringDataAccess implements F
   }
 
   @Override
-  public List<FL_Cluster> getClusters(List<String> clusterIds, String contextId)
-      throws AvroRemoteException {
+  public List<FL_Cluster> getClusters(List<String> clusterIds, String contextId) {
 
     List<FL_Cluster> results = new ArrayList<FL_Cluster>();
 
@@ -230,7 +225,7 @@ public class DynamicClustering extends AbstractClusteringDataAccess implements F
   }
 
   @Override
-  public long removeMembers(List<String> entityIds, String contextId) throws AvroRemoteException {
+  public long removeMembers(List<String> entityIds, String contextId) {
 
     PermitSet permits = new PermitSet();
 
@@ -254,8 +249,7 @@ public class DynamicClustering extends AbstractClusteringDataAccess implements F
     }
   }
 
-  private long removeMembers(List<String> entityIds, ClusterContext context)
-      throws AvroRemoteException {
+  private long removeMembers(List<String> entityIds, ClusterContext context) {
     int count = 0;
 
     // make local copy of list to avoid concurrent modification exceptions
@@ -297,7 +291,7 @@ public class DynamicClustering extends AbstractClusteringDataAccess implements F
   }
 
   @Override
-  public List<FL_Cluster> getContext(String contextId) throws AvroRemoteException {
+  public List<FL_Cluster> getContext(String contextId) {
 
     List<FL_Cluster> results = new ArrayList<FL_Cluster>();
 
@@ -330,7 +324,7 @@ public class DynamicClustering extends AbstractClusteringDataAccess implements F
   }
 
   @Override
-  public boolean clearContext(String contextId) throws AvroRemoteException {
+  public boolean clearContext(String contextId) {
     PermitSet permits = new PermitSet();
 
     try {
@@ -352,8 +346,7 @@ public class DynamicClustering extends AbstractClusteringDataAccess implements F
       FL_DirectionFilter direction,
       FL_DateRange date,
       String entitiesContextId,
-      String focusContextId)
-      throws AvroRemoteException {
+      String focusContextId) {
 
     PermitSet permits = new PermitSet();
 
@@ -390,7 +383,7 @@ public class DynamicClustering extends AbstractClusteringDataAccess implements F
         return relatedLinks;
       }
     } catch (DataAccessException e) {
-      throw new AvroRemoteException(e);
+      throw new RuntimeException(e);
     } finally {
       permits.revoke();
     }
@@ -402,8 +395,7 @@ public class DynamicClustering extends AbstractClusteringDataAccess implements F
       List<String> focusEntityIds,
       FL_DateRange date,
       String entitiesContextId,
-      String focusContextId)
-      throws AvroRemoteException {
+      String focusContextId) {
 
     // Find leaf nodes for focii, and keep track of leaf id ->original cluster id
     Map<String, String> fociiIdMap = new HashMap<String, String>();
@@ -541,8 +533,8 @@ public class DynamicClustering extends AbstractClusteringDataAccess implements F
   }
 
   @Override
-  public List<String> getLeafIds(List<String> ids, String context, boolean searchImmutableClusters)
-      throws AvroRemoteException {
+  public List<String> getLeafIds(
+      List<String> ids, String context, boolean searchImmutableClusters) {
     if (ids == null || ids.isEmpty()) return Collections.emptyList();
 
     Set<String> lids = new HashSet<String>();
@@ -588,8 +580,7 @@ public class DynamicClustering extends AbstractClusteringDataAccess implements F
   }
 
   private Set<String> getClusterLeafIds(
-      List<String> clusterIds, String context, boolean searchImmutableClusters)
-      throws AvroRemoteException {
+      List<String> clusterIds, String context, boolean searchImmutableClusters) {
 
     if (clusterIds == null || clusterIds.isEmpty()) return Collections.emptySet();
 

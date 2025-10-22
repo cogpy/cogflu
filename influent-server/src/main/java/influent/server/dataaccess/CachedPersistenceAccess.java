@@ -23,7 +23,6 @@ import influent.idl.FL_PersistenceState;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
-import org.apache.avro.AvroRemoteException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,7 +62,7 @@ public class CachedPersistenceAccess implements FL_Persistence {
   }
 
   @Override
-  public String getData(String sessionId) throws AvroRemoteException {
+  public String getData(String sessionId) {
 
     String data = null;
 

@@ -35,7 +35,6 @@ import java.util.Map;
 import oculus.aperture.common.JSONProperties;
 import oculus.aperture.common.rest.ApertureServerResource;
 import oculus.aperture.spi.common.Properties;
-import org.apache.avro.AvroRemoteException;
 import org.joda.time.DateTime;
 import org.joda.time.MutableDateTime;
 import org.json.JSONException;
@@ -188,7 +187,7 @@ public class BigChartResource extends ApertureServerResource {
                 endDate,
                 focusIds,
                 focusMaxDebitCredit,
-                dateRange.getNumBins().intValue(),
+                (int) dateRange.getNumBins(),
                 width,
                 height,
                 entityContextId,
@@ -204,7 +203,7 @@ public class BigChartResource extends ApertureServerResource {
                 entityContextId,
                 focusContextId,
                 sessionId,
-                dateRange.getNumBins().intValue(),
+                (int) dateRange.getNumBins(),
                 hash);
 
         infoList.put(
@@ -214,8 +213,6 @@ public class BigChartResource extends ApertureServerResource {
 
       return infoList;
 
-    } catch (AvroRemoteException e) {
-      throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Data access error.", e);
     } catch (JSONException je) {
       throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "JSON parse error.", je);
     }

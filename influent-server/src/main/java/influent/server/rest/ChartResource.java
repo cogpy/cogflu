@@ -36,7 +36,6 @@ import java.util.Map;
 import oculus.aperture.common.JSONProperties;
 import oculus.aperture.common.rest.ApertureServerResource;
 import oculus.aperture.spi.common.Properties;
-import org.apache.avro.AvroRemoteException;
 import org.joda.time.DateTime;
 import org.joda.time.MutableDateTime;
 import org.json.JSONException;
@@ -72,43 +71,39 @@ public class ChartResource extends ApertureServerResource {
 
   @Get
   public Representation getChartImage() {
-    try {
-      Form form = getRequest().getResourceRef().getQueryAsForm();
+    Form form = getRequest().getResourceRef().getQueryAsForm();
 
-      String hash = form.getFirstValue("hash").trim();
-      ChartHash hashed = new ChartHash(hash);
+    String hash = form.getFirstValue("hash").trim();
+    ChartHash hashed = new ChartHash(hash);
 
-      String sessionId = hashed.getSessionId();
-      if (!GuidValidator.validateGuidString(sessionId)) {
-        throw new ResourceException(
-            Status.CLIENT_ERROR_EXPECTATION_FAILED, "sessionId is not a valid UUID");
-      }
-
-      String entityContextId = hashed.getContextId();
-      String focusContextId = hashed.getFocusContextId();
-
-      FL_DateRange dateRange =
-          DateRangeBuilder.getDateRange(hashed.getStartDate(), hashed.getEndDate());
-      ChartData data =
-          chartBuilder.computeChart(
-              dateRange,
-              hashed.getIds(),
-              hashed.getFocusIds(),
-              entityContextId,
-              focusContextId,
-              sessionId,
-              hashed.getNumBuckets(),
-              hashed);
-      ChartImage image =
-          new ChartImage(
-              hashed.getWidth(), hashed.getHeight(), hashed.getFocusMaxDebitCredit(), data);
-      image.draw();
-
-      getResponse().setCacheDirectives(ImmutableList.of(CacheDirective.maxAge(maxCacheAge)));
-      return new ImageRepresentation(image);
-    } catch (AvroRemoteException e) {
-      throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Data access error.", e);
+    String sessionId = hashed.getSessionId();
+    if (!GuidValidator.validateGuidString(sessionId)) {
+      throw new ResourceException(
+          Status.CLIENT_ERROR_EXPECTATION_FAILED, "sessionId is not a valid UUID");
     }
+
+    String entityContextId = hashed.getContextId();
+    String focusContextId = hashed.getFocusContextId();
+
+    FL_DateRange dateRange =
+        DateRangeBuilder.getDateRange(hashed.getStartDate(), hashed.getEndDate());
+    ChartData data =
+        chartBuilder.computeChart(
+            dateRange,
+            hashed.getIds(),
+            hashed.getFocusIds(),
+            entityContextId,
+            focusContextId,
+            sessionId,
+            hashed.getNumBuckets(),
+            hashed);
+    ChartImage image =
+        new ChartImage(
+            hashed.getWidth(), hashed.getHeight(), hashed.getFocusMaxDebitCredit(), data);
+    image.draw();
+
+    getResponse().setCacheDirectives(ImmutableList.of(CacheDirective.maxAge(maxCacheAge)));
+    return new ImageRepresentation(image);
   }
 
   @Post("json")
@@ -263,8 +258,6 @@ public class ChartResource extends ApertureServerResource {
 
       return infoList;
 
-    } catch (AvroRemoteException e) {
-      throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Data access error.", e);
     } catch (JSONException je) {
       throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "JSON parse error.", je);
     }

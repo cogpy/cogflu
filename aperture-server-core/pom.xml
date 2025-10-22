@@ -83,24 +83,24 @@
 
 		<!-- RESTLET - use older version compatible with javax servlet API -->
 		<dependency>
-			<groupId>org.restlet</groupId>
+			<groupId>org.restlet.jee</groupId>
 			<artifactId>org.restlet</artifactId>
-			<version>2.6.0</version>
+			<version>2.4.3</version>
 		</dependency>
 		<dependency>
-			<groupId>org.restlet</groupId>
+			<groupId>org.restlet.jee</groupId>
 			<artifactId>org.restlet.ext.servlet</artifactId>
-			<version>2.6.0</version>
+			<version>2.4.3</version>
 		</dependency>
 		<dependency>
-			<groupId>org.restlet</groupId>
+			<groupId>org.restlet.jee</groupId>
 			<artifactId>org.restlet.ext.jackson</artifactId>
-			<version>2.6.0</version>
+			<version>2.4.3</version>
 		</dependency>
 		<dependency>
-			<groupId>org.restlet</groupId>
+			<groupId>org.restlet.jee</groupId>
 			<artifactId>org.restlet.ext.json</artifactId>
-			<version>2.5.2</version>
+			<version>2.4.3</version>
 		</dependency>
 
 		<!-- Cache -->
@@ -137,6 +137,14 @@
 		</dependency>
 
 	</dependencies>
+
+	<repositories>
+		<repository>
+			<id>restlet</id>
+			<name>Restlet Repository</name>
+			<url>https://maven.restlet.talend.com</url>
+		</repository>
+	</repositories>
 
 	<profiles>
 		<profile>

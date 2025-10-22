@@ -27,7 +27,6 @@ import influent.server.clustering.utils.ClusterContextCache;
 import influent.server.utilities.GuidValidator;
 import oculus.aperture.common.JSONProperties;
 import oculus.aperture.common.rest.ApertureServerResource;
-import org.apache.avro.AvroRemoteException;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.restlet.data.MediaType;
@@ -92,9 +91,6 @@ public class SaveStateResource extends ApertureServerResource {
           Status.CLIENT_ERROR_BAD_REQUEST,
           "Unable to create JSON object from supplied options string",
           e);
-    } catch (AvroRemoteException e) {
-      throw new ResourceException(
-          Status.CLIENT_ERROR_BAD_REQUEST, "Exception during AVRO processing", e);
     }
   }
 }

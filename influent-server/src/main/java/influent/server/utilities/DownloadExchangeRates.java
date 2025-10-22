@@ -200,6 +200,7 @@ public class DownloadExchangeRates {
                       break;
                     }
                   } catch (ParseException e) {
+                    throw new RuntimeException(e);
                   }
                   lines.add(line);
                 } else {
@@ -247,6 +248,7 @@ public class DownloadExchangeRates {
             try {
               Thread.sleep(pauseInMs);
             } catch (InterruptedException e) {
+              throw new RuntimeException(e);
             }
 
           } catch (IOException e) {
@@ -279,6 +281,7 @@ public class DownloadExchangeRates {
           fwriter.close();
         }
       } catch (IOException e) {
+        throw new RuntimeException(e);
       }
     }
 

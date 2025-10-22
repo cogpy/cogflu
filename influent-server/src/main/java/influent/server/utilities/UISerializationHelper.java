@@ -191,6 +191,7 @@ public class UISerializationHelper {
           props.put(prop.getKey(), obj);
         }
       } catch (JSONException e) {
+        throw new RuntimeException(e);
       }
     }
 
@@ -226,6 +227,7 @@ public class UISerializationHelper {
           props.put(prop.getKey(), obj);
         }
       } catch (JSONException e) {
+        throw new RuntimeException(e);
       }
     }
 
@@ -332,6 +334,7 @@ public class UISerializationHelper {
       try {
         typeMappings.put(desc.getType(), desc.getMemberKey());
       } catch (JSONException e) {
+        throw new RuntimeException(e);
       }
     }
 
@@ -382,6 +385,7 @@ public class UISerializationHelper {
         jprop.put("displayOrder", i++);
         props.put(prop.getKey(), jprop);
       } catch (JSONException e) {
+        throw new RuntimeException(e);
       }
     }
     fll.put("properties", props);

@@ -24,7 +24,6 @@ import influent.server.utilities.UISerializationHelper;
 import java.util.ArrayList;
 import java.util.List;
 import oculus.aperture.common.rest.ApertureServerResource;
-import org.apache.avro.AvroRemoteException;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.restlet.data.MediaType;
@@ -50,8 +49,6 @@ public class LinkSearchParamsResource extends ApertureServerResource {
       JSONObject jo = UISerializationHelper.toUIJson(filterSearchable(searcher.getDescriptors()));
 
       return new StringRepresentation(jo.toString(), MediaType.APPLICATION_JSON);
-    } catch (AvroRemoteException ae) {
-      throw new ResourceException(ae);
     } catch (JSONException e) {
       throw new ResourceException(e);
     }

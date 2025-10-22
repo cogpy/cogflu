@@ -29,7 +29,6 @@ import influent.server.sql.SQLBuilder;
 import influent.server.utilities.*;
 import java.util.*;
 import oculus.aperture.spi.common.Properties;
-import org.apache.avro.AvroRemoteException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,8 +68,7 @@ public class DataViewEntitySearch implements FL_EntitySearch {
       List<FL_OrderBy> orderBy,
       long start,
       long max,
-      FL_LevelOfDetail levelOfDetail)
-      throws AvroRemoteException {
+      FL_LevelOfDetail levelOfDetail) {
 
     ArrayList<FL_SearchResult> matches = new ArrayList<FL_SearchResult>();
 
@@ -90,7 +88,7 @@ public class DataViewEntitySearch implements FL_EntitySearch {
   }
 
   @Override
-  public FL_PropertyDescriptors getDescriptors() throws AvroRemoteException {
+  public FL_PropertyDescriptors getDescriptors() {
     return _applicationConfiguration.getEntityDescriptors();
   }
 
@@ -112,7 +110,7 @@ public class DataViewEntitySearch implements FL_EntitySearch {
    */
   @Override
   public FL_PropertyDescriptors getKeyDescriptors(
-      FL_SearchResults results, List<FL_OrderBy> resultOrder) throws AvroRemoteException {
+      FL_SearchResults results, List<FL_OrderBy> resultOrder) {
 
     final FL_PropertyDescriptors all = _applicationConfiguration.getEntityDescriptors();
     final List<FL_PropertyDescriptor> props = all.getProperties();

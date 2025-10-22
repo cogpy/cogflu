@@ -35,7 +35,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import oculus.aperture.spi.store.ConflictException;
-import org.apache.avro.AvroRemoteException;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -155,7 +154,7 @@ public class GraphMLImportDataService implements ImportDataService {
               .getContext()
               .addEntities(entityAccess.getEntities(entityIds, FL_LevelOfDetail.SUMMARY));
           contextRW.setSimplifiedContext(allClusters);
-        } catch (IOException | AvroRemoteException e) {
+        } catch (IOException e) {
           throw new ResourceException(
               Status.CLIENT_ERROR_BAD_REQUEST, "Exception during cluster cache processing.", e);
         } finally {

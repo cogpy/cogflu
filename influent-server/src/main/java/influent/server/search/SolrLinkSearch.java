@@ -31,7 +31,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import oculus.aperture.spi.common.Properties;
-import org.apache.avro.AvroRemoteException;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrQuery.ORDER;
@@ -71,8 +70,7 @@ public class SolrLinkSearch extends DataViewLinkSearch implements FL_LinkSearch 
       List<FL_OrderBy> orderBy,
       long start,
       long max,
-      FL_LevelOfDetail levelOfDetail)
-      throws AvroRemoteException {
+      FL_LevelOfDetail levelOfDetail) {
     ArrayList<FL_SearchResult> results = new ArrayList<FL_SearchResult>();
     SolrLinkSearchIterator ssr;
 
@@ -166,7 +164,7 @@ public class SolrLinkSearch extends DataViewLinkSearch implements FL_LinkSearch 
       }
 
     } catch (Exception e) {
-      throw new AvroRemoteException(e);
+      throw new RuntimeException(e);
     }
 
     return FL_SearchResults.newBuilder()

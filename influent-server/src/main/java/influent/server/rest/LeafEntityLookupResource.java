@@ -39,7 +39,6 @@ import java.util.List;
 import oculus.aperture.common.JSONProperties;
 import oculus.aperture.common.rest.ApertureServerResource;
 import oculus.aperture.spi.common.Properties;
-import org.apache.avro.AvroRemoteException;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -163,8 +162,6 @@ public class LeafEntityLookupResource extends ApertureServerResource {
           Status.CLIENT_ERROR_BAD_REQUEST,
           "Unable to create JSON object from supplied options string",
           e);
-    } catch (AvroRemoteException e) {
-      throw new ResourceException(Status.SERVER_ERROR_INTERNAL, "Unable to retrieve entities", e);
     }
   }
 }
