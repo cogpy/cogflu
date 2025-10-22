@@ -27,8 +27,8 @@ import influent.server.utilities.PropertyField;
 import java.util.ArrayList;
 import java.util.List;
 import oculus.aperture.spi.common.Properties;
+import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrQuery;
-import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 
@@ -42,7 +42,7 @@ public class SolrLinkSearchIterator extends SolrBaseSearchIterator {
 
   public SolrLinkSearchIterator(
       DataNamespaceHandler namespaceHandler,
-      SolrServer server,
+      SolrClient server,
       SolrQuery q,
       Properties config,
       FL_LevelOfDetail levelOfDetail,
