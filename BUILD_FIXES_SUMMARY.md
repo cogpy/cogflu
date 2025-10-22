@@ -32,7 +32,11 @@ Successfully fixed all major Maven build issues in the cogpy/cogflu repository. 
 - **Problem**: Avro 1.12.1 code generator created buggy hashCode() method in FL_SearchResult.java
   - Line 370: `result == null ? 0 : result.hashCode()` where `result` is a local int variable
   - Should be: `this.result == null ? 0 : this.result.hashCode()` where `this.result` is the Object field
-- **Solution**: Applied sed fix after Avro code generation: 
+- **Solution**: Added Maven antrun plugin to automatically fix the generated code after Avro code generation
+  - Plugin configuration in `influent-spi/pom.xml` runs in the `generate-sources` phase
+  - Uses `replaceregexp` task to replace `result == null` with `this.result == null` on line 370
+  - Fix is now automatic and persistent across clean builds
+- **Previous Manual Solution** (no longer needed): 
   ```bash
   sed -i '370s/result == null ? 0 : result\.hashCode()/this.result == null ? 0 : this.result.hashCode()/'
   ```
@@ -133,16 +137,14 @@ Key files include:
 # Navigate to project directory
 cd /home/ubuntu/cogflu
 
-# Apply the FL_SearchResult fix (needed after mvn clean)
-sed -i '370s/result == null ? 0 : result\.hashCode()/this.result == null ? 0 : this.result.hashCode()/' \
-  influent-spi/src/main/java/influent/idl/FL_SearchResult.java
-
 # Build without tests (tests have runtime failures)
 mvn install -DskipTests
 
 # Or build specific modules
 mvn install -DskipTests -rf :influent-server
 ```
+
+**Note**: The FL_SearchResult.java fix is now automated via Maven antrun plugin and no longer requires manual intervention after `mvn clean`.
 
 ## Root Causes
 
@@ -157,10 +159,9 @@ mvn install -DskipTests -rf :influent-server
 
 ## Recommendations
 
-1. **For Clean Builds**: Always apply the FL_SearchResult fix after `mvn clean` since it regenerates from Avro schema
+1. **Automated Fix Applied**: The FL_SearchResult fix is now automated via Maven antrun plugin - no manual intervention needed
 2. **Consider Upgrading**: Migrate to Jakarta EE (jakarta.servlet.*) and use newer library versions
-3. **Fix Avro Schema**: Update the Avro IDL or use a custom template to generate correct hashCode() methods
-4. **Repository Configuration**: Fix or remove the unavailable Spray.cc repository for influent-clustering-job module
+3. **Repository Configuration**: Fix or remove the unavailable maven.restlet.talend.com repository for aperture-server-core module
 
 ## Summary
 
