@@ -37,7 +37,6 @@ import influent.server.utilities.SQLConnectionPool;
 import java.util.List;
 import java.util.Map;
 import oculus.aperture.spi.common.Properties;
-import org.apache.avro.AvroRemoteException;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrQuery;
 
@@ -80,8 +79,7 @@ public class KivaEntitySearch extends SolrEntitySearch {
       List<FL_OrderBy> orderBy,
       long start,
       long max,
-      FL_LevelOfDetail lod)
-      throws AvroRemoteException {
+      FL_LevelOfDetail lod) {
 
     // Special case for partners. Only partner ids are stored in solr. So if user searches for a
     // partner

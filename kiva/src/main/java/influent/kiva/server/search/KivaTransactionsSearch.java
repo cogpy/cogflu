@@ -31,7 +31,6 @@ import influent.server.utilities.SQLConnectionPool;
 import java.util.Collections;
 import java.util.List;
 import oculus.aperture.spi.common.Properties;
-import org.apache.avro.AvroRemoteException;
 
 public class KivaTransactionsSearch extends DataViewLinkSearch implements FL_LinkSearch {
 
@@ -83,7 +82,7 @@ public class KivaTransactionsSearch extends DataViewLinkSearch implements FL_Lin
             }
           }
         }
-      } catch (AvroRemoteException are) {
+      } catch (Exception e) {
         // do nothing
       }
     }
@@ -106,7 +105,7 @@ public class KivaTransactionsSearch extends DataViewLinkSearch implements FL_Lin
             }
           }
         }
-      } catch (AvroRemoteException are) {
+      } catch (Exception e) {
         // do nothing
       }
     }

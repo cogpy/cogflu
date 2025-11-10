@@ -34,7 +34,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import oculus.aperture.spi.common.Properties;
-import org.apache.avro.AvroRemoteException;
 import org.json.JSONException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,8 +63,7 @@ public class KivaDataAccess extends DataViewDataAccess implements FL_DataAccess 
   }
 
   @Override
-  public Map<String, List<FL_Entity>> getAccounts(List<String> entities)
-      throws AvroRemoteException {
+  public Map<String, List<FL_Entity>> getAccounts(List<String> entities) {
 
     final List<String> ns_entities = InfluentId.nativeFromInfluentIds(entities);
     Map<String, List<FL_Entity>> map = new HashMap<String, List<FL_Entity>>();
@@ -125,7 +123,7 @@ public class KivaDataAccess extends DataViewDataAccess implements FL_DataAccess 
       stmt.close();
       connection.close();
     } catch (Exception e) {
-      throw new AvroRemoteException(e);
+      throw new RuntimeException(e);
     } finally {
       try {
         connection.close();

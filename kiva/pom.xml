@@ -49,6 +49,13 @@
 			<type>zip</type>
 		</dependency>
 		<dependency>
+			<artifactId>influent-client</artifactId>
+			<groupId>${project.groupId}</groupId>
+			<version>${project.version}</version>
+			<classifier>src</classifier>
+			<type>zip</type>
+		</dependency>
+		<dependency>
 			<groupId>commons-lang</groupId>
 			<artifactId>commons-lang</artifactId>
 			<version>2.6</version>
