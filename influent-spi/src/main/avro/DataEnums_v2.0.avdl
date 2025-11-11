@@ -129,7 +129,8 @@ protocol FL_DataEnums {
 		ENTITY,				// Identifier for an entity
 		SHARED_IDENTIFIER,	// Shared attribute identifier
 		FROM_LABEL,			// A text label to display from entity in a transaction
-		TO_LABEL			// A text label to display to entity in a transaction
+		TO_LABEL,			// A text label to display to entity in a transaction
+		AvTransAmnt			// Average transaction amount
 	}
 
 	//------------------------------------------------------------------------------------------------------------------
