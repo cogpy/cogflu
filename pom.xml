@@ -309,9 +309,10 @@
 		<module>opencog-integration</module>
 		
 		<!-- Aperture dependencies (must be built first) -->
+		<!-- aperture-spi MUST be first as it has no dependencies and is required by aperture-common -->
+		<module>aperture-spi</module>
 		<module>aperture-common</module>
 		<module>aperture-client</module>
-		<module>aperture-spi</module>
 		<module>aperture-server-core</module>
 		<module>aperture-geo</module>
 		<module>aperture-icons</module>
