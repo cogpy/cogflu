@@ -36,7 +36,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<aperture.version>1.0.9.1</aperture.version>
 		<influent.dev.client.src>../influent-client/influent-clientjs/src</influent.dev.client.src>
-		<spotless.version>2.46.1</spotless.version>
+		<spotless.version>3.0.0</spotless.version>
 		<!-- Default dummy NVD API key to prevent 403 errors when real key is not set -->
 		<nvd.api.key>dummy-api-key-12345</nvd.api.key>
 	</properties>
