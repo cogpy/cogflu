@@ -137,7 +137,7 @@
 		<dependency>
 			<artifactId>solr-solrj</artifactId>
 			<groupId>org.apache.solr</groupId>
-			<version>9.9.0</version>
+			<version>9.10.0</version>
 		</dependency>
 
 		<dependency>
@@ -314,7 +314,7 @@
 				<dependency>
 					<artifactId>solr-solrj</artifactId>
 					<groupId>org.apache.solr</groupId>
-					<version>9.9.0</version>
+					<version>9.10.0</version>
 				</dependency>
 		    </dependencies>
 			<build>
