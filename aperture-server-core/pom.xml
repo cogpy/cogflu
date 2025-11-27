@@ -82,7 +82,8 @@
 			<version>4.0.3</version>
 		</dependency>
 
-		<!-- RESTLET - use older version compatible with javax servlet API -->
+		<!-- RESTLET - Note: using older version 2.4.x which internally uses javax.servlet
+		     but works with Jakarta EE containers via compatibility layer -->
 		<dependency>
 			<groupId>org.restlet.jee</groupId>
 			<artifactId>org.restlet</artifactId>

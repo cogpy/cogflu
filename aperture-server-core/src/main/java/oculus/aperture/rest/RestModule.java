@@ -32,6 +32,8 @@ import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletContextListener;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.Filter;
@@ -77,8 +79,8 @@ public class RestModule extends ServletModule implements ServletContextListener 
     
     @Override
     public void doFilter(
-        jakarta.servlet.ServletRequest request,
-        jakarta.servlet.ServletResponse response,
+        ServletRequest request,
+        ServletResponse response,
         FilterChain chain) throws IOException, ServletException {
       // Simply pass through to the next filter/servlet in the chain
       chain.doFilter(request, response);

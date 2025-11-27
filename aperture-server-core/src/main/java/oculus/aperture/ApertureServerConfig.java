@@ -129,7 +129,7 @@ public class ApertureServerConfig extends GuiceServletContextListener {
   }
 
   /* (non-Javadoc)
-   * @see com.google.inject.servlet.GuiceServletContextListener#contextDestroyed(javax.servlet.ServletContextEvent)
+   * @see com.google.inject.servlet.GuiceServletContextListener#contextDestroyed(jakarta.servlet.ServletContextEvent)
    */
   @Override
   public void contextDestroyed(ServletContextEvent servletContextEvent) {
