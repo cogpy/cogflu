@@ -7,12 +7,18 @@ on:
     branches: [ "master", "main", "develop" ]
     paths:
       - 'aperture-icons/**'
-      - 'aperture-icons/pom.xml'
+      - 'aperture-spi/**'
+      - 'aperture-common/**'
+      - 'aperture-geo/**'
+      - 'pom.xml'
   pull_request:
     branches: [ "master", "main", "develop" ]
     paths:
       - 'aperture-icons/**'
-      - 'aperture-icons/pom.xml'
+      - 'aperture-spi/**'
+      - 'aperture-common/**'
+      - 'aperture-geo/**'
+      - 'pom.xml'
   workflow_dispatch:
 
 jobs:
@@ -31,22 +37,19 @@ jobs:
         distribution: 'temurin'
         cache: maven
         
-    - name: Build aperture-icons
-      run: mvn -B clean install -DskipTests
-      working-directory: aperture-icons
+    - name: Build aperture-icons with dependencies
+      run: mvn -B clean install -DskipTests -pl aperture-spi,aperture-common,aperture-geo,aperture-icons -am
       env:
         MAVEN_OPTS: '-Xmx2048m -Xms1024m'
         
     - name: Run tests for aperture-icons
-      run: mvn -B test
-      working-directory: aperture-icons
+      run: mvn -B test -pl aperture-icons
       continue-on-error: false
       env:
         MAVEN_OPTS: '-Xmx2048m -Xms1024m'
         
     - name: Generate dependency tree
-      run: mvn dependency:tree -DoutputFile=dependency-tree.txt
-      working-directory: aperture-icons
+      run: mvn dependency:tree -DoutputFile=aperture-icons/dependency-tree.txt -pl aperture-icons
       continue-on-error: true
       
     - name: Upload dependency tree

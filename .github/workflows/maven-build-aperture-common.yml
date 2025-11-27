@@ -7,12 +7,14 @@ on:
     branches: [ "master", "main", "develop" ]
     paths:
       - 'aperture-common/**'
-      - 'aperture-common/pom.xml'
+      - 'aperture-spi/**'
+      - 'pom.xml'
   pull_request:
     branches: [ "master", "main", "develop" ]
     paths:
       - 'aperture-common/**'
-      - 'aperture-common/pom.xml'
+      - 'aperture-spi/**'
+      - 'pom.xml'
   workflow_dispatch:
 
 jobs:
@@ -31,22 +33,19 @@ jobs:
         distribution: 'temurin'
         cache: maven
         
-    - name: Build aperture-common
-      run: mvn -B clean install -DskipTests
-      working-directory: aperture-common
+    - name: Build aperture-common with dependencies
+      run: mvn -B clean install -DskipTests -pl aperture-spi,aperture-common -am
       env:
         MAVEN_OPTS: '-Xmx2048m -Xms1024m'
         
     - name: Run tests for aperture-common
-      run: mvn -B test
-      working-directory: aperture-common
+      run: mvn -B test -pl aperture-common
       continue-on-error: false
       env:
         MAVEN_OPTS: '-Xmx2048m -Xms1024m'
         
     - name: Generate dependency tree
-      run: mvn dependency:tree -DoutputFile=dependency-tree.txt
-      working-directory: aperture-common
+      run: mvn dependency:tree -DoutputFile=aperture-common/dependency-tree.txt -pl aperture-common
       continue-on-error: true
       
     - name: Upload dependency tree
