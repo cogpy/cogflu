@@ -7,12 +7,16 @@ on:
     branches: [ "master", "main", "develop" ]
     paths:
       - 'aperture-geo/**'
-      - 'aperture-geo/pom.xml'
+      - 'aperture-spi/**'
+      - 'aperture-common/**'
+      - 'pom.xml'
   pull_request:
     branches: [ "master", "main", "develop" ]
     paths:
       - 'aperture-geo/**'
-      - 'aperture-geo/pom.xml'
+      - 'aperture-spi/**'
+      - 'aperture-common/**'
+      - 'pom.xml'
   workflow_dispatch:
 
 jobs:
@@ -31,22 +35,19 @@ jobs:
         distribution: 'temurin'
         cache: maven
         
-    - name: Build aperture-geo
-      run: mvn -B clean install -DskipTests
-      working-directory: aperture-geo
+    - name: Build aperture-geo with dependencies
+      run: mvn -B clean install -DskipTests -pl aperture-spi,aperture-common,aperture-geo -am
       env:
         MAVEN_OPTS: '-Xmx2048m -Xms1024m'
         
     - name: Run tests for aperture-geo
-      run: mvn -B test
-      working-directory: aperture-geo
+      run: mvn -B test -pl aperture-geo
       continue-on-error: false
       env:
         MAVEN_OPTS: '-Xmx2048m -Xms1024m'
         
     - name: Generate dependency tree
-      run: mvn dependency:tree -DoutputFile=dependency-tree.txt
-      working-directory: aperture-geo
+      run: mvn dependency:tree -DoutputFile=aperture-geo/dependency-tree.txt -pl aperture-geo
       continue-on-error: true
       
     - name: Upload dependency tree

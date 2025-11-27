@@ -7,12 +7,14 @@ on:
     branches: [ "master", "main", "develop" ]
     paths:
       - 'aperture-server/**'
-      - 'aperture-server/pom.xml'
+      - 'aperture-*/**'
+      - 'pom.xml'
   pull_request:
     branches: [ "master", "main", "develop" ]
     paths:
       - 'aperture-server/**'
-      - 'aperture-server/pom.xml'
+      - 'aperture-*/**'
+      - 'pom.xml'
   workflow_dispatch:
 
 jobs:
@@ -31,22 +33,19 @@ jobs:
         distribution: 'temurin'
         cache: maven
         
-    - name: Build aperture-server
-      run: mvn -B clean install -DskipTests -fn
-      working-directory: aperture-server
+    - name: Build aperture-server with dependencies
+      run: mvn -B clean install -DskipTests -pl aperture-server -am
       env:
         MAVEN_OPTS: '-Xmx2048m -Xms1024m'
         
     - name: Run tests for aperture-server
-      run: mvn -B test -fn
-      working-directory: aperture-server
+      run: mvn -B test -pl aperture-server
       continue-on-error: true
       env:
         MAVEN_OPTS: '-Xmx2048m -Xms1024m'
         
     - name: Generate dependency tree
-      run: mvn dependency:tree -DoutputFile=dependency-tree.txt
-      working-directory: aperture-server
+      run: mvn dependency:tree -DoutputFile=aperture-server/dependency-tree.txt -pl aperture-server
       continue-on-error: true
       
     - name: Upload dependency tree
