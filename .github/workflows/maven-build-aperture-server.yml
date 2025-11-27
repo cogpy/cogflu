@@ -7,13 +7,27 @@ on:
     branches: [ "master", "main", "develop" ]
     paths:
       - 'aperture-server/**'
-      - 'aperture-*/**'
+      - 'aperture-spi/**'
+      - 'aperture-capture-phantom/**'
+      - 'aperture-client/**'
+      - 'aperture-cms/**'
+      - 'aperture-examples/**'
+      - 'aperture-icons/**'
+      - 'aperture-layout/**'
+      - 'aperture-layout-yworks/**'
       - 'pom.xml'
   pull_request:
     branches: [ "master", "main", "develop" ]
     paths:
       - 'aperture-server/**'
-      - 'aperture-*/**'
+      - 'aperture-spi/**'
+      - 'aperture-capture-phantom/**'
+      - 'aperture-client/**'
+      - 'aperture-cms/**'
+      - 'aperture-examples/**'
+      - 'aperture-icons/**'
+      - 'aperture-layout/**'
+      - 'aperture-layout-yworks/**'
       - 'pom.xml'
   workflow_dispatch:
 
