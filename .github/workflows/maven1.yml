@@ -27,9 +27,20 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
         cache: maven
-    - name: Build with Maven
-      run: mvn -B package --file pom.xml
+    # SSR: Build with Maven - ensure complete build before dependency analysis
+    - name: Build with Maven (SSR check)
+      run: mvn clean install --batch-mode --update-snapshots
+      env:
+        MAVEN_OPTS: '-Xmx2048m -Xms1024m'
+    
+    # SSR: Verify build artifacts exist before dependency submission (SSR diagnostics)
+    - name: Verify build artifacts (SSR diagnostics)
+      run: ls -al target/ || echo "No target directory found"
+      continue-on-error: true
 
-    # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
-    - name: Update dependency graph
+    # SSR: Upload dependency graph with explicit path to prevent undefined array errors
+    # This ensures server-side dependency processing has valid input
+    - name: Generate dependency snapshot (SSR path)
       uses: advanced-security/maven-dependency-submission-action@571e99aab1055c2e71a1e2309b9691de18d6b7d6
+      with:
+        maven-project: ./pom.xml
