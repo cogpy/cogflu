@@ -32,7 +32,7 @@ import java.nio.charset.Charset;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
-import javax.servlet.ServletContext;
+import jakarta.servlet.ServletContext;
 import oculus.aperture.common.UtilProperties;
 import oculus.aperture.common.util.ResourceHelper;
 import org.slf4j.Logger;
