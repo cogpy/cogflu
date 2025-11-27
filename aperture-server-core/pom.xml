@@ -70,9 +70,10 @@
 
 
 		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
-			<version>4.0.1</version>
+			<groupId>jakarta.servlet</groupId>
+			<artifactId>jakarta.servlet-api</artifactId>
+			<version>6.0.0</version>
+			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
@@ -81,7 +82,8 @@
 			<version>4.0.3</version>
 		</dependency>
 
-		<!-- RESTLET - use older version compatible with javax servlet API -->
+		<!-- RESTLET - Note: using older version 2.4.x which internally uses javax.servlet
+		     but works with Jakarta EE containers via compatibility layer -->
 		<dependency>
 			<groupId>org.restlet.jee</groupId>
 			<artifactId>org.restlet</artifactId>
@@ -103,7 +105,10 @@
 			<version>2.4.4</version>
 		</dependency>
 
-		<!-- Cache -->
+		<!-- Cache - Disabled for Jakarta Servlet API compatibility
+		     ehcache-web uses javax.servlet and has no Jakarta equivalent
+		     For production use, consider Jakarta-compatible caching solutions -->
+		<!--
 		<dependency>
 			<groupId>net.sf.ehcache</groupId>
 			<artifactId>ehcache-core</artifactId>
@@ -113,6 +118,7 @@
 			<groupId>net.sf.ehcache</groupId>
 			<artifactId>ehcache-web</artifactId>
 		</dependency>
+		-->
 		
 		<!-- Testing -->
 		<dependency>
