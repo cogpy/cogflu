@@ -104,7 +104,10 @@
 			<version>2.4.4</version>
 		</dependency>
 
-		<!-- Cache -->
+		<!-- Cache - Disabled for Jakarta Servlet API compatibility
+		     ehcache-web uses javax.servlet and has no Jakarta equivalent
+		     For production use, consider Jakarta-compatible caching solutions -->
+		<!--
 		<dependency>
 			<groupId>net.sf.ehcache</groupId>
 			<artifactId>ehcache-core</artifactId>
@@ -114,6 +117,7 @@
 			<groupId>net.sf.ehcache</groupId>
 			<artifactId>ehcache-web</artifactId>
 		</dependency>
+		-->
 		
 		<!-- Testing -->
 		<dependency>
