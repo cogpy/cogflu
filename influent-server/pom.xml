@@ -121,10 +121,11 @@
 			<scope>compile</scope>
 		</dependency>
 		
+		<!-- Using Shiro 1.13.0 for javax.servlet compatibility -->
 		<dependency>
 			<groupId>org.apache.shiro</groupId>
 			<artifactId>shiro-guice</artifactId>
-			<version>2.0.6</version>
+			<version>1.13.0</version>
 			<scope>compile</scope>
 		</dependency>
 
@@ -159,10 +160,11 @@
 			<scope>provided</scope>
 		</dependency>
 
+		<!-- Using Guice Servlet 4.2.3 for javax.servlet compatibility -->
 		<dependency>
 			<groupId>com.google.inject.extensions</groupId>
 			<artifactId>guice-servlet</artifactId>
-			<version>7.0.0</version>
+			<version>4.2.3</version>
 		</dependency>
 
 		<!-- JAXB dependencies for Java 17 compatibility -->

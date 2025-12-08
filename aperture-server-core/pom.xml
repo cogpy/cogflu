@@ -45,13 +45,14 @@
 			<type>jar</type>
 		</dependency>
 
-		<dependency>
-			<groupId>com.google.inject.extensions</groupId>
-			<artifactId>guice-servlet</artifactId>
-			<version>7.0.0</version>
-			<type>jar</type>
-			<scope>compile</scope>
-		</dependency>
+	<!-- Using Guice Servlet 4.2.3 for javax.servlet compatibility with Restlet 2.4.x -->
+	<dependency>
+		<groupId>com.google.inject.extensions</groupId>
+		<artifactId>guice-servlet</artifactId>
+		<version>4.2.3</version>
+		<type>jar</type>
+		<scope>compile</scope>
+	</dependency>
 
 		<dependency>
 			<groupId>com.google.inject</groupId>
@@ -69,12 +70,20 @@
 		</dependency>
 
 
-		<dependency>
-			<groupId>jakarta.servlet</groupId>
-			<artifactId>jakarta.servlet-api</artifactId>
-			<version>6.0.0</version>
-			<scope>provided</scope>
-		</dependency>
+	<dependency>
+		<groupId>jakarta.servlet</groupId>
+		<artifactId>jakarta.servlet-api</artifactId>
+		<version>6.0.0</version>
+		<scope>provided</scope>
+	</dependency>
+
+	<!-- javax.servlet API for Restlet 2.4.x compatibility -->
+	<dependency>
+		<groupId>javax.servlet</groupId>
+		<artifactId>javax.servlet-api</artifactId>
+		<version>4.0.1</version>
+		<scope>provided</scope>
+	</dependency>
 
 		<dependency>
 			<groupId>com.sun.xml.ws</groupId>

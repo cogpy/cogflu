@@ -20,26 +20,21 @@
  */
 package oculus.aperture.rest;
 
-import com.google.common.io.Files;
 import com.google.inject.Provides;
 import com.google.inject.servlet.ServletModule;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Map;
 import java.util.Map.Entry;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletContext;
-import jakarta.servlet.ServletContextEvent;
-import jakarta.servlet.ServletContextListener;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.ServletRequest;
-import jakarta.servlet.ServletResponse;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.Filter;
-import jakarta.servlet.FilterConfig;
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import oculus.aperture.common.rest.ResourceDefinition;
-import oculus.aperture.common.util.ResourceHelper;
 import oculus.aperture.config.ClientConfigResource;
 import org.restlet.Application;
 import org.restlet.Context;
@@ -64,28 +59,26 @@ public class RestModule extends ServletModule implements ServletContextListener 
   private static final String REST_BASE = "/rest";
 
   /**
-   * Simple passthrough filter that allows all requests through without caching.
-   * This replaces the ehcache-web dependency which is not compatible with Jakarta Servlet API.
-   * 
-   * For production use, consider implementing a Jakarta-compatible caching solution
-   * such as JCache (JSR-107) or Spring Cache.
+   * Simple passthrough filter that allows all requests through without caching. This replaces the
+   * ehcache-web dependency which is not compatible with Jakarta Servlet API.
+   *
+   * <p>For production use, consider implementing a Jakarta-compatible caching solution such as
+   * JCache (JSR-107) or Spring Cache.
    */
   private static class SimplePassthroughFilter implements Filter {
-    
+
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
       // No initialization needed
     }
-    
+
     @Override
-    public void doFilter(
-        ServletRequest request,
-        ServletResponse response,
-        FilterChain chain) throws IOException, ServletException {
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+        throws IOException, ServletException {
       // Simply pass through to the next filter/servlet in the chain
       chain.doFilter(request, response);
     }
-    
+
     @Override
     public void destroy() {
       // No cleanup needed
