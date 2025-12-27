@@ -42,5 +42,6 @@ jobs:
     # This ensures server-side dependency processing has valid input
     - name: Generate dependency snapshot (SSR path)
       uses: advanced-security/maven-dependency-submission-action@571e99aab1055c2e71a1e2309b9691de18d6b7d6
+      continue-on-error: true  # Don't fail the workflow if dependency graph generation has issues
       with:
         maven-project: ./pom.xml
