@@ -48,10 +48,19 @@ end-to-end out of the box:
 
 ### Exercising core functionality without the web stack
 Influent's core "dynamic entity clustering" is the `ensemble-clustering` library and
-runs with no external services. Build it (`mvn -q package -pl ensemble-clustering`) and
-use `com.oculusinfo.ml.unsupervised.cluster.kmeans.KMeans` /
-`...dpmeans.DPMeans` with `DataSet`/`Instance`/`NumericVectorFeature` — see the tests
-under `ensemble-clustering/src/test/java/com/oculusinfo/ml/unsupervised/`.
+runs with no external services. Hello-world demo (no external deps):
+
+```bash
+mvn -q -pl ensemble-clustering test-compile
+mvn -q -pl ensemble-clustering dependency:build-classpath \
+  -Dmdep.outputFile=/tmp/ec-cp.txt -DincludeScope=test
+java -cp "ensemble-clustering/target/classes:ensemble-clustering/target/test-classes:$(cat /tmp/ec-cp.txt)" \
+  com.oculusinfo.ml.unsupervised.EntityClusteringDemo
+```
+
+Source:
+`ensemble-clustering/src/test/java/com/oculusinfo/ml/unsupervised/EntityClusteringDemo.java`
+(same package as the other unsupervised demos).
 
 ### Other subprojects
 `graphrag/` is a separate embedded Python project (Microsoft GraphRAG) with its own
