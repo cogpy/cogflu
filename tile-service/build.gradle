@@ -14,7 +14,10 @@ dependencies {
 	compile "net.sf.ehcache:ehcache:2.8.4"
 	compile "net.sf.ehcache:ehcache-web:2.0.4"
 	compile "org.slf4j:slf4j-api:1.7.7"
-	compile "log4j:log4j:1.2.17"
+	// Log4j 2.x migration: Replaced log4j:log4j:1.2.17 (CVE-2022-23305)
+	compile "org.apache.logging.log4j:log4j-api:2.25.2"
+	compile "org.apache.logging.log4j:log4j-core:2.25.2"
+	compile "org.apache.logging.log4j:log4j-1.2-api:2.25.2"  // Bridge for Log4j 1.x API compatibility
 
 	compile project(":math-utilities")
 	compile project(":binning-utilities")
